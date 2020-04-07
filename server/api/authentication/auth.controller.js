@@ -107,7 +107,7 @@ exports.login = (req, res, next) => {
                                 return config.successresponse(res, 200, 'Authentication successull!', payload)
                             } else {
                                 connection.release()
-                                return config.errorResponse(res, 200, 'Wrong password')
+                                return config.errorResponse(res, 500, 'Wrong password')
                             }
                         })
                     }
