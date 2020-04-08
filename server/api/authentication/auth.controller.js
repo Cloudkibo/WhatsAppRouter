@@ -17,7 +17,7 @@ exports.signup = (req, res, next) => {
                     } else {
                         if (user.length > 0) {
                             connection.release()
-                            return config.errorResponse(res, 500, 'Email already exist.')
+                            return config.errorResponse(res, 202, 'Email already exist.')
                         } else {
                             let sql = `SELECT * FROM users WHERE phone = '${req.body.phone}'`
                             connection.query(sql, (error, userPhone) => {
@@ -27,7 +27,7 @@ exports.signup = (req, res, next) => {
                                 } else {
                                     if (userPhone.length > 0) {
                                         connection.release()
-                                        return config.errorResponse(res, 500, 'Phone already exist.')
+                                        return config.errorResponse(res, 202, 'Phone already exist.')
                                     } else {
                                         bcrypt.hash(req.body.password, 10, (err, hash) => {
                                             if (err) {
@@ -63,7 +63,7 @@ exports.signup = (req, res, next) => {
             }
         })
     } else {
-        return config.errorResponse(res, 500, 'Confirmation password should be same.')
+        return config.errorResponse(res, 201, 'Confirmation password should be same.')
     }
 
 }
@@ -82,7 +82,7 @@ exports.login = (req, res, next) => {
                 } else {
                     if (user.length < 1) {
                         connection.release()
-                        return config.errorResponse(res, 500, 'Email not exist.')
+                        return config.errorResponse(res, 202, 'Email not exist.')
                     } else {
                         bcrypt.compare(req.body.password, user[0].password, (err, result) => {
                             if (err) {
@@ -107,7 +107,7 @@ exports.login = (req, res, next) => {
                                 return config.successresponse(res, 200, 'Authentication successull!', payload)
                             } else {
                                 connection.release()
-                                return config.errorResponse(res, 500, 'Wrong password')
+                                return config.errorResponse(res, 202, 'Wrong password')
                             }
                         })
                     }
