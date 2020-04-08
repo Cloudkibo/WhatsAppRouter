@@ -25,8 +25,7 @@ export const login = user => {
             password: user.password,
         })
         .then(res => {
-            localStorage.setItem('userToken', res.data.payload.token)
-            return res.data
+            return res
         })
         .catch(error => {
             console.log(error)

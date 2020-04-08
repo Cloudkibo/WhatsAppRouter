@@ -116,9 +116,7 @@ export default class accountInformation extends Component {
                          <br></br>
                          <br></br>
                          {this.state.displayAlert && 
-                        <div className={this.state.messageDisplay ? 'alert alert-success':'alert alert-danger'}>{this.state.messageDisplay ? 'update information successfully': 'Failed to update Information'}
-                         <button type="button" className="close" data-dismiss="alert">&times;</button>
-                        </div>
+                        <Alert color= {this.state.messageDisplay ? "success" : 'danger'}>{this.state.messageDisplay ? 'update information successfully': 'Failed to update Information'}</Alert>
                          }
                     </form>
                 </div>

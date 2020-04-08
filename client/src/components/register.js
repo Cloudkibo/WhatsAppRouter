@@ -11,7 +11,10 @@ export default class SignUp extends Component {
                 email: '',
                 phone: '',
                 password: '',
-                confirmPassword: ''
+                confirmPassword: '',
+                displayAlert: false,
+                msg: '',
+                alertType: ''
         }
         this.onChange = this.onChange.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
@@ -39,7 +42,9 @@ export default class SignUp extends Component {
             confirmPassword: this.state.confirmPassword
         }
         register(user).then(res => {
-            if(res.status === 200) {
+            if (res.status === 202) {
+                this.setState({displayAlert: true, msg: res.data.description, alertType: 'danger'})
+            } else if (res.status === 200) {
                 this.props.history.push('/sign-in')
             }
         })
@@ -48,6 +53,10 @@ export default class SignUp extends Component {
         return (
             <div className="auth-wrapper">
                 <div className="auth-inner">
+                {this.state.displayAlert && 
+                        <div id='alert' className={this.state.alertType ? `alert alert-${this.state.alertType}`:'alert alert-info'}>{this.state.msg ? this.state.msg: 'Authentication Failed'}
+                        </div>
+                         }
                     <form onSubmit={this.onSubmit}>
                         <h3>Sign Up</h3>
                         <div className='row'>
