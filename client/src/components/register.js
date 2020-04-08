@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { register } from "../utility/auth.service";
 
+
 export default class SignUp extends Component {
     constructor() {
         super();
@@ -15,6 +16,14 @@ export default class SignUp extends Component {
         this.onChange = this.onChange.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
     }
+
+    componentDidMount() {
+        if(localStorage.userToken){
+            this.props.history.push('/home')
+        }
+        
+    }
+
     onChange(e) {
         this.setState({[e.target.name]: e.target.value})
     }
