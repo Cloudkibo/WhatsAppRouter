@@ -6,7 +6,7 @@ import Login from "./components/login";
 import SignUp from "./components/register";
 
 import Home from './components/home';
-
+import accountInformation from './components/accountInformation';
 class App extends Component {
   constructor() {
     super();
@@ -22,6 +22,7 @@ class App extends Component {
             <Route exact path='/' component={Login} />
             <Route exact path="/sign-in" component={Login} />
             <Route exact path="/sign-up" component={SignUp} />
+            <Route exact path="/accountInformation" component={accountInformation} />
           </Switch>
       </Router>
     );
