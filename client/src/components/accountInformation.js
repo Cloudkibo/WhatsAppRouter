@@ -79,6 +79,7 @@ export default class accountInformation extends Component {
                                 placeholder="fName"
                                 value={this.state.fName}
                                 onChange={this.onChange} />
+                                
                         </div>
                         <div className="form-group">
                             <input 
@@ -110,7 +111,7 @@ export default class accountInformation extends Component {
                                  />
                         </div>
                         <br></br>
-                        <button type="submit" className="btn btn-primary">Edit</button>
+                        <button style = {{marginLeft: '68px'}} type="submit" className="btn btn-primary">Edit</button>
                         <button  style = {{marginLeft: '35px'}} className="btn btn-secondary" onClick={() => {this.props.history.push('/home')}}>Back</button>
                          <br></br>
                          <br></br>
