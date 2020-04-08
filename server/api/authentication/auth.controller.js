@@ -63,7 +63,7 @@ exports.signup = (req, res, next) => {
             }
         })
     } else {
-        return config.errorResponse(res, 201, 'Confirmation password should be same.')
+        return config.errorResponse(res, 202, 'Confirmation password should be same.')
     }
 
 }
