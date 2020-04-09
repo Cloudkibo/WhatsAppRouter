@@ -10,7 +10,8 @@ middleware.checkAuth,
 controller.get
 );
 
-router.get('/:id', 
+router.get('/:id',
+middleware.checkAuth,
 controller.getById
 )
 
@@ -22,6 +23,11 @@ controller.post
 router.put('/', 
 middleware.checkAuth,
 controller.put
+)
+
+router.delete('/',
+middleware.checkAuth,
+controller.delete
 )
 
 router.get('/redirectUrl/:id',
