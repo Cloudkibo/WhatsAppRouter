@@ -1,10 +1,10 @@
 const axios = require('axios');
-const proxy = 'http://localhost:4200/'
+
 
 
 export const register = newUser => {
     return axios
-        .post(`${proxy}signup/`,{
+        .post(`/signup`,{
             firstname: newUser.firstname,
             lastname: newUser.lastname,
             email: newUser.email,
@@ -20,13 +20,12 @@ export const register = newUser => {
 
 export const login = user => {
     return axios
-        .post(`${proxy}login`,{
+        .post(`/login`,{
             email: user.email,  
             password: user.password,
         })
         .then(res => {
-            localStorage.setItem('userToken', res.data.payload.token)
-            return res.data
+            return res
         })
         .catch(error => {
             console.log(error)

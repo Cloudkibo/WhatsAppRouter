@@ -75,3 +75,7 @@ body, html, .App, #root, .auth-wrapper {
 .pull-right {
   float: right;
 }
+
+.fade{
+  opacity: none;
+}

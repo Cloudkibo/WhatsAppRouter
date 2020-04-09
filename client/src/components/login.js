@@ -1,14 +1,15 @@
 import React, { Component } from "react";
 import { login } from "../utility/auth.service";
 
-import Alert from './alerts'
-
 export default class Login extends Component {
     constructor() {
         super();
         this.state = {
             email: '',
             password: '',
+            displayAlert: false,
+            msg: '',
+            alertType: ''
         }
         this.onChange = this.onChange.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
@@ -18,7 +19,6 @@ export default class Login extends Component {
         if (localStorage.userToken) {
             this.props.history.push('/home')
         }
-        this.msg = 'hello'
 
     }
 
@@ -27,13 +27,15 @@ export default class Login extends Component {
     }
     onSubmit(e) {
         e.preventDefault()
-
         const user = {
             email: this.state.email,
             password: this.state.password
         }
         login(user).then(res => {
-            if (res) {
+            if (res.status === 202) {
+                this.setState({displayAlert: true, msg: res.data.description, alertType: 'danger'})
+            } else if (res.status === 200){
+                localStorage.setItem('userToken', res.data.payload.token)
                 this.props.history.push('/home')
             }
         })
@@ -41,9 +43,12 @@ export default class Login extends Component {
     render() {
         return (
             <div>
-                <Alert ref={a => { this.msg = a }}/>
                 <div className="auth-wrapper">
                     <div className="auth-inner">
+                    {this.state.displayAlert && 
+                        <div id='alert' className={this.state.alertType ? `alert alert-${this.state.alertType}`:'alert alert-info'}>{this.state.msg ? this.state.msg: 'Authentication Failed'}
+                        </div>
+                         }
                         <form onSubmit={this.onSubmit}>
                             <h3>Sign In</h3>
                             <div className="form-group">
@@ -55,6 +60,10 @@ export default class Login extends Component {
                                     placeholder="Enter email"
                                     value={this.state.email}
                                     onChange={this.onChange} />
+                                <small id="emailHelp"
+                                     className="form-text text-muted">
+                                         We'll never share your email with anyone else.
+                                </small>
                             </div>
 
                             <div className="form-group">
@@ -68,7 +77,6 @@ export default class Login extends Component {
                                     onChange={this.onChange}
                                 />
                             </div>
-
                             <button type="submit" className="btn btn-primary btn-block">Sign In</button>
                             <p className="forgot-password text-right">
                                 Forgot <a href="/#">password?</a> Or, <a href="/sign-up">sign Up?</a>

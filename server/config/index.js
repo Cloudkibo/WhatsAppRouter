@@ -5,10 +5,10 @@ exports.all = {
 }
 
 exports.pool = mysql.createPool({
-    connectionLimit: 50,
+    connectionLimit: 100,
     host     : 'localhost',
     user     : 'root',
-    password : 'password',
+    password : '',
     database: 'WLB'
   })
 
