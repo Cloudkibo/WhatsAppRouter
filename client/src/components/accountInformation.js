@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import jwt_decode from 'jwt-decode'
 import { Alert } from 'reactstrap';
 const axios = require('axios');
-const proxy = 'http://localhost:4200/'
 export default class accountInformation extends Component {
     constructor() {
         super();
@@ -25,7 +24,7 @@ export default class accountInformation extends Component {
             const token = localStorage.userToken
             const decode = jwt_decode(token)
             console.log(decode)
-        axios.get(`${proxy}users/${decode.userId}`, {
+        axios.get(`/users/${decode.userId}`, {
             headers: {
             "Authorization": `Bearer ${localStorage.userToken}`
             }
@@ -51,7 +50,7 @@ export default class accountInformation extends Component {
             firstname: this.state.fName,
             lastname: this.state.lName
         }
-        axios.put(`${proxy}users/${decode.userId}`,data,{
+        axios.put(`/users/${decode.userId}`,data,{
             headers: {
             "Authorization": `Bearer ${localStorage.userToken}`
             }
