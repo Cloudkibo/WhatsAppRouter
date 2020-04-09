@@ -102,10 +102,8 @@ exports.put = (req, res, next) => {
                     connection.release()
                     return config.errorResponse(res, 500, 'Failed to query database.', error)
                 } else {
-                    urls = urls.map(element => {return (element.baseurl == '0').element})
-                    console.log(urls)
+                    urls = urls.filter(element => (element.baseurl == '0'))
                     req.body.alternetUrl.forEach(element => {
-                        // toDelete.splice(toDelete.indexOf(temp), 1)
                         if(!element.id) {
                             let data = {
                                 url: element.url,
@@ -117,6 +115,7 @@ exports.put = (req, res, next) => {
                             let insert = 'INSERT INTO urls SET ?'
                             promise.push(connection.query(insert, data))
                         } else {
+                            urls = urls.filter(url => !(url.id === element.id))
                             let data = [
                                 element.url,
                                 element.count,
@@ -125,6 +124,10 @@ exports.put = (req, res, next) => {
                             let update = `UPDATE urls SET url = ? , participentCount = ? WHERE id = ?`;
                             promise.push(connection.query(update, data))
                         }
+                    })
+                    urls.forEach(element => {
+                        let sql = `DELETE FROM urls WHERE id = ${element.id}`;
+                        promise.push(connection.query(sql))
                     })
                     let data = [
                         req.body.baseUrl,
@@ -160,7 +163,6 @@ exports.delete = (req, res, next) => {
                     connection.release()
                     return config.errorResponse(res, 500, 'Failed to query database.', error)
                 } else {
-                    console.log(urls)
                     let promise = []
                     urls.forEach(element => {
                         let sql = `DELETE FROM urls WHERE id = ${element.id}`;

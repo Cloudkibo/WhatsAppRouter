@@ -33,18 +33,33 @@ export default class Home extends Component {
         this.toBeEdit = this.toBeEdit.bind(this)
         this.editURL = this.editURL.bind(this)
         this.toBeAdd = this.toBeAdd.bind(this)
+        this.copyUrl = this.copyUrl.bind(this)
     }
 
-    toBeAdd () {
-        this.setState({addUrls: {
-            baseUrl: "",
-            count: 0,
-            alternetUrl: []
-        }})
+    copyUrl(url) {
+        var para = document.createElement("TEXTAREA");
+        para.value = url.redirectUrl;
+        para.setAttribute('readonly', '');
+        para.style.position = 'absolute';
+        para.style.left = '-9999px';
+        document.body.appendChild(para);
+        para.select()
+        document.execCommand("copy");
+        document.body.removeChild(para);
+        this.setState({ copied: true })
+    }
+
+    toBeAdd() {
+        this.setState({
+            addUrls: {
+                baseUrl: "",
+                count: 0,
+                alternetUrl: []
+            }
+        })
     }
 
     editURL() {
-        console.log(this.state.addUrls)
         axios
             .put('/urls/', this.state.addUrls, {
                 headers: {
@@ -59,7 +74,7 @@ export default class Home extends Component {
                         alternetUrl: []
                     }
                 })
-                this.getUrl()
+                setTimeout(() => { this.getUrl() }, 500)
             })
             .catch(err => {
             })
@@ -206,8 +221,8 @@ export default class Home extends Component {
             })
     }
 
+
     getUrl() {
-        console.log('you have called me')
         axios
             .get(`/urls/`, {
                 headers: {
@@ -217,17 +232,14 @@ export default class Home extends Component {
             .then(res => {
                 let urls = res.data.payload
                 let baseUrls = urls.filter(url => url.baseurl === 1)
-                let count = 0;
-                baseUrls.forEach(element => {
-                    urls.map(x => {
-                        if (x.baseUrlId === element.id) {
-                            count++
-                        }
-                    })
+                console.log(urls)
+                console.log(baseUrls)
+                baseUrls.forEach((element) => {
+                    let count = urls.filter(x => (x.baseUrlId === element.id)).length
+                    console.log(count)
                     element.alternetGroups = count
-                    count = 0
                 });
-                this.setState({ baseUrls: baseUrls })
+                this.setState({ baseUrls: baseUrls, copied: false })
 
             })
             .catch(err => {
@@ -260,7 +272,12 @@ export default class Home extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className='col-sm-12'>
+                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                        {this.state.copied && 
+                        <div className="alert alert-primary" role="alert">
+                            Redirect Link Copied!
+                        </div>
+                        }   
                     </div>
                     <div className='col-sm-12'>
                         <button type="button"
@@ -289,10 +306,11 @@ export default class Home extends Component {
                                                 <td>{url.alternetGroups}</td>
                                                 <td>{url.redirectUrl}</td>
                                                 <td>
-                                                    <a href='/#'
+                                                    <a
                                                         data-placement="bottom"
                                                         title="Copy Redirect URL"
-                                                        style={{ margin: '2px' }}>
+                                                        style={{ margin: '2px' }}
+                                                        onClick={() => this.copyUrl(url)}>
                                                         <span className="badge badge-pill badge-info">
                                                             <span className="material-icons">
                                                                 file_copy
