@@ -15,7 +15,7 @@ exports.get = (req, res, next) => {
                 } else {
                     urls.forEach(element => {
                         if (element.baseurl == '1') {
-                            element.redirectUrl = `localhost:8080/urls/redirectUrl/${element.id}`
+                            element.redirectUrl = `/urls/redirectUrl/${element.id}`
                         }
                     })
                     return config.successresponse(res, 200, 'fetched all urls successfully!', urls)

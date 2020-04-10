@@ -42,6 +42,7 @@ client/public/js/bundle.js.map
 client/public/dist/
 client/index.html
 server/api/backdoor/my-file.csv
+server/config/index.js
 
 # Typescript v1 declaration files
 typings/
