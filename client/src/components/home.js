@@ -232,11 +232,10 @@ export default class Home extends Component {
             .then(res => {
                 let urls = res.data.payload
                 let baseUrls = urls.filter(url => url.baseurl === 1)
-                console.log(urls)
-                console.log(baseUrls)
                 baseUrls.forEach((element) => {
+                    let webUrl = window.location.href.split('/');
+                    element.redirectUrl = webUrl[0]+'//'+webUrl[2]+element.redirectUrl
                     let count = urls.filter(x => (x.baseUrlId === element.id)).length
-                    console.log(count)
                     element.alternetGroups = count
                 });
                 this.setState({ baseUrls: baseUrls, copied: false })
