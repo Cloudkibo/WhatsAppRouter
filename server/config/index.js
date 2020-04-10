@@ -25,3 +25,5 @@ exports.pool = mysql.createPool({
       error: JSON.stringify(error)
     })
   }
+
+  "hello"
