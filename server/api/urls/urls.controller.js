@@ -18,6 +18,7 @@ exports.get = (req, res, next) => {
                             element.redirectUrl = `/urls/redirectUrl/${element.id}`
                         }
                     })
+                    console.log(urls)
                     return config.successresponse(res, 200, 'fetched all urls successfully!', urls)
                 }
             })
