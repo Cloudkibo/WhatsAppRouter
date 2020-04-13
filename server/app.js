@@ -43,6 +43,9 @@ app.use((req, res, next) => {
 app.use('/', authRouter);
 app.use('/users', usersRouter);
 app.use('/urls', urlRouter)
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
