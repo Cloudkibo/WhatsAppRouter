@@ -39,9 +39,9 @@ app.use((req, res, next) => {
   next()
 })
 
-app.use('/', authRouter);
-app.use('/users', usersRouter);
 app.use('/urls', urlRouter)
+app.use('/users', usersRouter);
+app.use('/', authRouter);
 app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
