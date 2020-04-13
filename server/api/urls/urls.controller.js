@@ -7,7 +7,7 @@ exports.get = (req, res, next) => {
             connection.release()
             return config.errorResponse(res, 500, 'Failed to create database connection.', err)
         } else {
-            let sql = `SELECT * FROM urls`
+            let sql = `SELECT * FROM urls WHERE userId = ${req.user.userId}`
             connection.query(sql, (error, urls) => {
                 if (error) {
                     connection.release()
@@ -104,7 +104,7 @@ exports.put = (req, res, next) => {
                 } else {
                     urls = urls.filter(element => (element.baseurl == '0'))
                     req.body.alternetUrl.forEach(element => {
-                        if(!element.id) {
+                        if (!element.id) {
                             let data = {
                                 url: element.url,
                                 participentCount: element.count,
@@ -146,7 +146,7 @@ exports.put = (req, res, next) => {
                         })
                 }
             })
-            
+
         }
     })
 }
@@ -194,29 +194,35 @@ exports.getRedirectUrl = (req, res, next) => {
                     connection.release()
                     return config.errorResponse(res, 500, 'Failed to query database.', error)
                 } else {
-                    let emptyGroups = []
-                    for (let i = 0; i < urls.length; i++) {
-                        if (urls[i].participentCount < 250) {
-                            emptyGroups.push(urls[i])
-                        } else {
-                            return config.errorResponse(res, 500, 'All Whatsapp Urls are full.')
+                    if (urls.length > 0) {
+                        let emptyGroups = []
+                        for (let i = 0; i < urls.length; i++) {
+                            if (urls[i].participentCount < 250) {
+                                emptyGroups.push(urls[i])
+                            }
                         }
+                        if (emptyGroups.length > 0) {
+                            let data = [
+                                emptyGroups[0].participentCount + 1,
+                                emptyGroups[0].id
+                            ]
+                            let sql = `UPDATE urls SET participentCount = ? WHERE id = ?`;
+                            connection.query(sql, data, (error, updated) => {
+                                if (error) {
+                                    connection.release()
+                                    return config.errorResponse(res, 500, 'Failed to query database.', error)
+                                } else {
+                                    let uri = emptyGroups[0].url
+                                    res.writeHead(301, { Location: uri })
+                                    res.end()
+                                }
+                            })
+                        } else {
+                            return res.send('This URL is no longer exist')
+                        }
+                    } else {
+                        return config.errorResponse(res, 500, 'No group found in the data base with this URL', error)
                     }
-                    let data = [
-                        emptyGroups[0].participentCount + 1,
-                        emptyGroups[0].id
-                    ]
-                    let sql = `UPDATE urls SET participentCount = ? WHERE id = ?`;
-                    connection.query(sql, data, (error, updated) => {
-                        if (error) {
-                            connection.release()
-                            return config.errorResponse(res, 500, 'Failed to query database.', error)
-                        } else {
-                            let uri = emptyGroups[0].url
-                            res.writeHead(301, { Location: uri })
-                            res.end()
-                        }
-                    })
                 }
             })
         }

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { login } from "../utility/auth.service";
+import SignUp from "./register";
 
 export default class Login extends Component {
     constructor() {
@@ -18,6 +19,9 @@ export default class Login extends Component {
     componentDidMount() {
         if (localStorage.userToken) {
             this.props.history.push('/home')
+        }
+        if(this.props.location.state && this.props.location.state.signedUp) {
+            this.setState({displayAlert: true, msg: "SignUp Successfully", alertType: 'success'})
         }
 
     }
