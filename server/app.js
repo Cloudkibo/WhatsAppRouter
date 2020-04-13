@@ -22,6 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+console.log(__dirname)
+app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
