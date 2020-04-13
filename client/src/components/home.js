@@ -60,6 +60,7 @@ export default class Home extends Component {
     }
 
     editURL() {
+        this.setState({ deleteAlert: false })
         axios
             .put('/urls/', this.state.addUrls, {
                 headers: {
@@ -120,7 +121,7 @@ export default class Home extends Component {
                 data: this.state.toBeDelete
             })
             .then(res => {
-                this.setState({ toBeDelete: {} })
+                this.setState({ toBeDelete: {}, deleteAlert: true })
                 this.getUrl()
             })
             .catch(err => {
@@ -167,6 +168,7 @@ export default class Home extends Component {
             })
             .then(res => {
                 this.setState({ addUrls: { baseUrl: "", count: 0, alternetUrl: [] } })
+                this.setState({ deleteAlert: false })
                 this.getUrl()
             })
             .catch(err => {
@@ -193,6 +195,7 @@ export default class Home extends Component {
             const token = localStorage.userToken
             const decode = jwt_decode(token)
             this.getUser(decode.userId)
+            this.setState({ deleteAlert: false })
             this.getUrl()
         }
 
@@ -233,9 +236,30 @@ export default class Home extends Component {
                 let urls = res.data.payload
                 let baseUrls = urls.filter(url => url.baseurl === 1)
                 baseUrls.forEach((element) => {
-                    let webUrl = window.location.href.split('/');
-                    element.redirectUrl = webUrl[0]+'//'+webUrl[2]+element.redirectUrl
-                    let count = urls.filter(x => (x.baseUrlId === element.id)).length
+                    let showRedirectUrl = false
+                    let alternetUrls = urls.filter(url => (url.baseUrlId === element.id))
+                    if (element.participentCount < 250) {
+                        showRedirectUrl = true
+                    }
+                    alternetUrls.forEach(atlernetUrl => {
+                        if (atlernetUrl.participentCount < 250) {
+                            showRedirectUrl = true
+                        }
+                    })
+                    if (showRedirectUrl) {
+                        let webUrl = window.location.href.split('/');
+                        if (webUrl[2].split(':')[1].length > 0) {
+                            element.redirectUrl = webUrl[0] + '//' + webUrl[2].split(':')[0] + ':8080' + element.redirectUrl
+                        } else {
+                            element.redirectUrl = webUrl[0] + '//' + webUrl[2] + '/' + element.redirectUrl
+                        }
+                        this.setState({ showRedirectUrl: true })
+                    } else {
+                        this.setState({ showRedirectUrl: false })
+                        element.redirectUrl = 'Groups are full'
+                    }
+                    // if(alternetUrl.length > 0)
+                    let count = alternetUrls.length
                     element.alternetGroups = count
                 });
                 this.setState({ baseUrls: baseUrls, copied: false })
@@ -272,11 +296,18 @@ export default class Home extends Component {
                         </div>
                     </div>
                     <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
-                        {this.state.copied && 
-                        <div className="alert alert-primary" role="alert">
-                            Redirect Link Copied!
+                        {this.state.deleteAlert &&
+                            <div className="alert alert-success" role="alert">
+                                Deleted URL Successfully!
                         </div>
-                        }   
+                        }
+                    </div>
+                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                        {this.state.copied &&
+                            <div className="alert alert-primary" role="alert">
+                                Redirect Link Copied!
+                        </div>
+                        }
                     </div>
                     <div className='col-sm-12'>
                         <button type="button"
@@ -296,58 +327,71 @@ export default class Home extends Component {
                                     <th scope="col">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {
-                                    this.state.baseUrls.map((url, i) =>
-                                        (
-                                            <tr key={i}>
-                                                <td>{url.url}</td>
-                                                <td>{url.alternetGroups}</td>
-                                                <td>{url.redirectUrl}</td>
-                                                <td>
-                                                    <a
-                                                        data-placement="bottom"
-                                                        title="Copy Redirect URL"
-                                                        style={{ margin: '2px' }}
-                                                        onClick={() => this.copyUrl(url)}>
-                                                        <span className="badge badge-pill badge-info">
-                                                            <span className="material-icons">
-                                                                file_copy
-                                                            </span>
+                            {this.state.baseUrls.length > 0
+                                ? <tbody>
+                                    {
+                                        this.state.baseUrls.map((url, i) =>
+                                            (
+                                                <tr key={i}>
+                                                    <td>{url.url}</td>
+                                                    <td>{url.alternetGroups}</td>
+                                                    <td>{url.redirectUrl}</td>
+                                                    <td>
+                                                        {this.state.showRedirectUrl
+                                                            &&
+                                                            <a
+                                                                data-placement="bottom"
+                                                                title="Copy Redirect URL"
+                                                                style={{ margin: '2px' }}
+                                                                onClick={() => this.copyUrl(url)}>
+                                                                <span className="badge badge-pill badge-info">
+                                                                    <span className="material-icons">
+                                                                        file_copy
+                                                                </span>
+                                                                </span>
+                                                            </a>
+                                                        }
+                                                        <a href='/#'
+                                                            data-toggle="modal"
+                                                            data-target="#edit"
+                                                            data-placement="bottom"
+                                                            title="Edit this URL"
+                                                            style={{ margin: '2px' }}
+                                                            onClick={() => this.toBeEdit(url)}>
+                                                            <span className="badge badge-pill badge-info">
+                                                                <span className="material-icons">
+                                                                    edit
                                                         </span>
-                                                    </a>
-                                                    <a href='/#'
-                                                        data-toggle="modal"
-                                                        data-target="#edit"
-                                                        data-placement="bottom"
-                                                        title="Edit this URL"
-                                                        style={{ margin: '2px' }}
-                                                        onClick={() => this.toBeEdit(url)}>
-                                                        <span className="badge badge-pill badge-info">
-                                                            <span className="material-icons">
-                                                                edit
                                                             </span>
+                                                        </a>
+                                                        <a href='/#'
+                                                            style={{ margin: '2px' }}
+                                                            onClick={() => this.toBeDelete(url)}
+                                                            data-toggle="modal"
+                                                            data-target="#delete"
+                                                            data-placement="bottom"
+                                                            title="Delete this url" >
+                                                            <span className="badge badge-pill badge-danger">
+                                                                <span className="material-icons">
+                                                                    delete_outline
                                                         </span>
-                                                    </a>
-                                                    <a href='/#'
-                                                        style={{ margin: '2px' }}
-                                                        onClick={() => this.toBeDelete(url)}
-                                                        data-toggle="modal"
-                                                        data-target="#delete"
-                                                        data-placement="bottom"
-                                                        title="Delete this url" >
-                                                        <span className="badge badge-pill badge-danger">
-                                                            <span className="material-icons">
-                                                                delete_outline
                                                             </span>
-                                                        </span>
-                                                    </a>
-                                                </td>
-                                            </tr>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            )
                                         )
-                                    )
-                                }
-                            </tbody>
+
+                                    }
+                                </tbody>
+                                : <tbody>
+                                    <tr>
+                                        <td>No data to display</td>
+                                    </tr>
+                                </tbody>
+
+                            }
+
                         </table>
                     </div>
                 </div>
@@ -552,4 +596,5 @@ export default class Home extends Component {
             </span>
         );
     }
+
 }

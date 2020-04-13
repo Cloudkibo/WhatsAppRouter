@@ -45,7 +45,9 @@ export default class SignUp extends Component {
             if (res.status === 202) {
                 this.setState({displayAlert: true, msg: res.data.description, alertType: 'danger'})
             } else if (res.status === 200) {
-                this.props.history.push('/sign-in')
+                this.props.history.push('/sign-in', 
+                {signedUp: true}
+                )
             }
         })
     }
