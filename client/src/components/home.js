@@ -262,6 +262,7 @@ export default class Home extends Component {
                     let count = alternetUrls.length
                     element.alternetGroups = count
                 });
+                console.log(baseUrls)
                 this.setState({ baseUrls: baseUrls, copied: false })
 
             })
