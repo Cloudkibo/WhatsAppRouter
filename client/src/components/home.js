@@ -248,7 +248,7 @@ export default class Home extends Component {
                     })
                     if (showRedirectUrl) {
                         let webUrl = window.location.href.split('/');
-                        if (webUrl[2].split(':')[1].length > 0) {
+                        if (webUrl[2].split(':')[1] && webUrl[2].split(':')[1].length > 0) {
                             element.redirectUrl = webUrl[0] + '//' + webUrl[2].split(':')[0] + ':8080' + element.redirectUrl
                         } else {
                             element.redirectUrl = webUrl[0] + '//' + webUrl[2] + '/' + element.redirectUrl
