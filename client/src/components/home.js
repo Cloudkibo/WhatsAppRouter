@@ -339,7 +339,7 @@ export default class Home extends Component {
                                                     <td>
                                                         {this.state.showRedirectUrl
                                                             &&
-                                                            <a
+                                                            <a href='/#'
                                                                 data-placement="bottom"
                                                                 title="Copy Redirect URL"
                                                                 style={{ margin: '2px' }}
