@@ -12,7 +12,7 @@ const urlRouter = require('./api/urls')
 
 var httpsApp = express()
 var httpApp = express()
-const app = (process.env.NODE_ENV === 'production') ? httpsApp : httpApp
+const app = (process.env.NODE_ENV === 'staging') ? httpsApp : httpApp
 
 
 
@@ -26,7 +26,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-console.log(__dirname)
 app.use(express.static(path.join(__dirname, '../client/build')));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
