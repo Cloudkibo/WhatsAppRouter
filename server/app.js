@@ -8,18 +8,13 @@ const bodyParser = require('body-parser')
 const usersRouter = require('./api/user');
 const authRouter = require('./api/authentication/')
 const urlRouter = require('./api/urls')
+const http = require('http')
+const https = require('https')
 
 
 var httpsApp = express()
 var httpApp = express()
 const app = (process.env.NODE_ENV === 'staging') ? httpsApp : httpApp
-
-
-
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
