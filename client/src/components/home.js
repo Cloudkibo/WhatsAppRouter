@@ -251,7 +251,7 @@ export default class Home extends Component {
                         if (webUrl[2].split(':')[1] && webUrl[2].split(':')[1].length > 0) {
                             element.redirectUrl = webUrl[0] + '//' + webUrl[2].split(':')[0] + ':8080' + element.redirectUrl
                         } else {
-                            element.redirectUrl = webUrl[0] + '//' + webUrl[2] + '/' + element.redirectUrl
+                            element.redirectUrl = webUrl[0] + '//' + webUrl[2] + element.redirectUrl
                         }
                         this.setState({ showRedirectUrl: true })
                     } else {
