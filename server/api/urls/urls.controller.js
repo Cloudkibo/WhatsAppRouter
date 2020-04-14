@@ -158,12 +158,14 @@ exports.delete = (req, res, next) => {
             connection.release()
             return config.errorResponse(res, 500, 'Failed to create database connection.', err)
         } else {
+            console.log('i am in delete')
             let sql = `SELECT * FROM urls WHERE id = ${req.body.id} OR baseUrlId = ${req.body.id}`
             connection.query(sql, (error, urls) => {
                 if (error) {
                     connection.release()
                     return config.errorResponse(res, 500, 'Failed to query database.', error)
                 } else {
+                    console.log('in urls', urls)
                     let promise = []
                     urls.forEach(element => {
                         let sql = `DELETE FROM urls WHERE id = ${element.id}`;
@@ -171,6 +173,7 @@ exports.delete = (req, res, next) => {
                     })
                     Promise.all(promise)
                         .then(result => {
+                            console.log('In Promise', result)
                             return config.successresponse(res, 200, 'Deleted url successfully!')
                         })
                         .catch(err => {
