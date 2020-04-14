@@ -133,6 +133,7 @@ export default class Home extends Component {
     }
 
     toBeDelete(url) {
+        console.log(url)
         this.setState({ toBeDelete: url })
         console.log(this.state.toBeDelete)
     }
