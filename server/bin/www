@@ -7,45 +7,39 @@
 var app = require('../app');
 var debug = require('debug')('wlb:server');
 var http = require('http');
-const https = require('https')
-const fs = require('fs')
+var https = require('https');
+var fs = require('fs');
 
-const {
-  NODE_ENV, PORT, HOST, SECURE_PORT
-} = process.env
+const {SECURE_PORT, PORT, NODE_ENV} = process.env
 
-console.log(NODE_ENV, PORT, SECURE_PORT,  HOST)
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
 
 let options = {
   ca: '',
   key: '',
   cert: ''
 }
-if (NODE_ENV === 'production') {
+
+if (process.env.NODE_ENV === 'staging') {
   try {
     options = {
-      ca: fs.readFileSync('/root/certs/ca_bundle.crt'),
-      key: fs.readFileSync('/root/certs/private.key'),
-      cert: fs.readFileSync('/root/certs/certificate.crt')
+      ca: fs.readFileSync('/root/certs/swlb.ca_bundle.crt'),
+      key: fs.readFileSync('/root/certs/swlb.key'),
+      cert: fs.readFileSync('/root/certs/swlb.crt')
     }
   } catch (e) {
   }
 }
 
 /**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(PORT || '3000');
-app.set('port', port);
-
-var securePort = normalizePort(SECURE_PORT || '4200')
-app.set('securePort', securePort);
-
-
-/**
  * Create HTTP server.
  */
+
 const server = http.createServer(app)
 const httpsServer = https.createServer(options, app)
 
@@ -56,9 +50,12 @@ const httpsServer = https.createServer(options, app)
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-httpsServer.listen(securePort)
-httpsServer.on('error', onError);
-httpsServer.on('listening', onListening);
+
+
+httpsServer.listen(SECURE_PORT, () => {
+  console.log(`DEMOSSA server STARTED on ${
+    SECURE_PORT} in ${NODE_ENV} mode`)
+})
 
 /**
  * Normalize a port into a number, string, or false.
