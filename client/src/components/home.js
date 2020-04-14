@@ -121,6 +121,7 @@ export default class Home extends Component {
                 data: this.state.toBeDelete
             })
             .then(res => {
+                console.log(toBeDelete)
                 this.setState({ toBeDelete: {}, deleteAlert: true })
                 this.getUrl()
             })
@@ -132,6 +133,7 @@ export default class Home extends Component {
 
     toBeDelete(url) {
         this.setState({ toBeDelete: url })
+        console.log(toBeDelete)
     }
 
     deleteAtlernetUrl(index) {
