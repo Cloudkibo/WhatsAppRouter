@@ -16,7 +16,12 @@ export default class Home extends Component {
                 alternetUrl: []
             },
             toBeDelete: {},
-            toBeAdd: {}
+            toBeAdd: {},
+            disabled: true,
+            msg: {
+                message: '',
+                show: false
+            }
         }
         this.getUser = this.getUser.bind(this);
         this.getUrl = this.getUrl.bind(this);
@@ -34,6 +39,7 @@ export default class Home extends Component {
         this.editURL = this.editURL.bind(this)
         this.toBeAdd = this.toBeAdd.bind(this)
         this.copyUrl = this.copyUrl.bind(this)
+        this.disable = this.disable.bind(this)
     }
 
     copyUrl(url) {
@@ -73,7 +79,13 @@ export default class Home extends Component {
                         baseUrl: "",
                         count: 0,
                         alternetUrl: []
+                    },
+                    disabled: true,
+                    msg: {
+                        message: '',
+                        show: false
                     }
+
                 })
                 setTimeout(() => { this.getUrl() }, 500)
             })
@@ -105,7 +117,10 @@ export default class Home extends Component {
                         data.alternetUrl.push(temp)
                     }
                 })
-                this.setState({ addUrls: data })
+                this.setState({ addUrls: data, msg: {
+                    message: '',
+                    show: false
+                } })
             })
             .catch(err => {
                 console.log(err)
@@ -142,25 +157,29 @@ export default class Home extends Component {
         let temp = this.state.addUrls
         temp.alternetUrl.splice(index, 1)
         this.setState({ addUrls: temp })
+        this.disable()
     }
 
     alternetCountChange(index, event) {
         let temp = this.state.addUrls
         temp.alternetUrl[index].count = event.target.value
         this.setState({ addUrls: temp })
+        this.disable()
     }
 
     alternetUrlChange(index, event) {
         let temp = this.state.addUrls
         temp.alternetUrl[index].url = event.target.value
         this.setState({ addUrls: temp })
+        this.disable()
     }
 
     addGroup() {
         let temp = this.state.addUrls
         let data = { url: '', count: 0 }
         temp.alternetUrl.push(data)
-        this.setState({ addUrls: temp })
+        this.setState({ addUrls: temp, disabled: true })
+        this.disable()
     }
 
     addUrl() {
@@ -172,7 +191,12 @@ export default class Home extends Component {
             })
             .then(res => {
                 this.setState({ addUrls: { baseUrl: "", count: 0, alternetUrl: [] } })
-                this.setState({ deleteAlert: false })
+                this.setState({
+                    deleteAlert: false, disabled: true, msg: {
+                        message: '',
+                        show: false
+                    }
+                })
                 this.getUrl()
             })
             .catch(err => {
@@ -184,12 +208,62 @@ export default class Home extends Component {
         let temp = this.state.addUrls
         temp.baseUrl = event.target.value
         this.setState({ addUrls: temp })
+        this.disable()
     }
 
     changeCount(event) {
         let temp = this.state.addUrls
         temp.count = event.target.value
         this.setState({ addUrls: temp })
+        this.disable()
+    }
+
+    disable() {
+        if (this.state.addUrls.baseUrl !== ''
+            && (this.state.addUrls.count >= 0 || this.state.addUrls.count <= 250)
+            && this.state.addUrls.baseUrl.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)
+        ) {
+            if (this.state.addUrls.alternetUrl.length > 0) {
+                let temp = false
+                this.state.addUrls.alternetUrl.forEach(url => {
+                    if (
+                        url.url === '' ||
+                        (url.count < 0 || url.count > 250) ||
+                        !url.url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)) {
+                        temp = true
+                    }
+                })
+                if(temp) {
+                this.setState({
+                    disabled: true, msg: {
+                        message: 'Either you entered a wrong url or the count can not be more than 250 or less than 0.',
+                        show: true
+                    }
+                })
+            } else {
+                this.setState({
+                    disabled: false, msg: {
+                        message: '',
+                        show: false
+                    }
+                })
+            }
+            } else {
+                this.setState({
+                    disabled: false, msg: {
+                        message: '',
+                        show: false
+                    }
+                })
+            }
+        } else {
+            this.setState({
+                disabled: true, msg: {
+                    message: 'Either you entered a wrong url or the count can not be more than 250 or less than 0.',
+                    show: true
+                }
+            })
+        }
     }
 
     componentDidMount() {
@@ -344,7 +418,7 @@ export default class Home extends Component {
                                                     <td>
                                                         {this.state.showRedirectUrl
                                                             &&
-                                                            <a href='/#'
+                                                            <a href='#/'
                                                                 data-placement="bottom"
                                                                 title="Copy Redirect URL"
                                                                 style={{ margin: '2px' }}
@@ -412,6 +486,13 @@ export default class Home extends Component {
                             </div>
                             <div className="modal-body">
                                 <div className='row'>
+                                    {this.state.msg.show &&
+                                        <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                                            <div className="alert alert-danger" role="alert">
+                                                {this.state.msg.message}
+                                            </div>
+                                        </div>
+                                    }
                                     <div className='col-sm-8'>
                                         <div className="form-group">
                                             <label>Base Group URL</label>
@@ -484,7 +565,7 @@ export default class Home extends Component {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.addUrl}>Add URL</button>
+                                <button type="button" className="btn btn-primary" data-dismiss="modal" disabled={this.state.disabled} onClick={this.addUrl}>Add URL</button>
                             </div>
                         </div>
                     </div>
@@ -521,6 +602,13 @@ export default class Home extends Component {
                             </div>
                             <div className="modal-body">
                                 <div className='row'>
+                                {this.state.msg.show &&
+                                        <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                                            <div className="alert alert-danger" role="alert">
+                                                {this.state.msg.message}
+                                            </div>
+                                        </div>
+                                    }
                                     <div className='col-sm-8'>
                                         <div className="form-group">
                                             <label>Base Group URL</label>
@@ -593,7 +681,7 @@ export default class Home extends Component {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.editURL}>Save changes</button>
+                                <button type="button" className="btn btn-primary" data-dismiss="modal" disabled={this.state.disabled} onClick={this.editURL}>Save changes</button>
                             </div>
                         </div>
                     </div>

@@ -11,7 +11,11 @@ export default class accountInformation extends Component {
             email: '',
             phoneNo: '',
             messageDisplay: false,
-            displayAlert : false
+            displayAlert : false,
+            msg: {
+                show: false,
+                message: ''
+            }
         }
         this.onChange = this.onChange.bind(this)
         this.onSubmit = this.onSubmit.bind(this)
@@ -50,19 +54,24 @@ export default class accountInformation extends Component {
             firstname: this.state.fName,
             lastname: this.state.lName
         }
-        axios.put(`/users/${decode.userId}`,data,{
-            headers: {
-            "Authorization": `Bearer ${localStorage.userToken}`
-            }
+        if(data.firstname === '' || data.lastname === '') {
+            this.setState({msg: {message: 'Fields can not be empty', show: true}})
+        } else {
+            axios.put(`/users/${decode.userId}`,data,{
+                headers: {
+                "Authorization": `Bearer ${localStorage.userToken}`
+                }
+                })
+            .then(res => {
+                console.log('update successfully', res)
+                this.setState({msg: {message: '', show: false}})
+                this.setState({displayAlert: true, messageDisplay:true})
             })
-        .then(res => {
-            console.log('update successfully', res)
-            this.setState({displayAlert: true, messageDisplay:true})
-        })
-        .catch(error => {
-            console.log(error)
-            this.setState({displayAlert: true, messageDisplay:false})
-        })
+            .catch(error => {
+                console.log(error)
+                this.setState({displayAlert: true, messageDisplay:false})
+            })
+        }
     }
     render() {
         return (
@@ -114,7 +123,10 @@ export default class accountInformation extends Component {
                         <button  style = {{marginLeft: '35px'}} className="btn btn-secondary" onClick={() => {this.props.history.push('/home')}}>Back</button>
                          <br></br>
                          <br></br>
-                         {this.state.displayAlert && 
+                         {this.state.msg.show &&
+                        <Alert color='danger'>{this.state.msg.message}</Alert>
+                         }
+                         {this.state.displayAlert &&
                         <Alert color= {this.state.messageDisplay ? "success" : 'danger'}>{this.state.messageDisplay ? 'update information successfully': 'Failed to update Information'}</Alert>
                          }
                     </form>
