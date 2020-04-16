@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import jwt_decode from 'jwt-decode'
 const axios = require('axios');
+const BitlyClient = require('bitly').BitlyClient;
+const bitly = new BitlyClient('4e26e6edc4f5f7145e9bf33d728083c0decdf12b');
 
 
 export default class Home extends Component {
@@ -159,7 +161,7 @@ export default class Home extends Component {
     }
 
     deleteAtlernetUrl(index) {
-        if(index < 0) {
+        if (index < 0) {
             if (this.state.email === this.state.confirmEmail) {
                 let temp = this.state.addUrls
                 temp.alternetUrl.splice(this.state.toBeAlternetDelete, 1)
@@ -168,14 +170,14 @@ export default class Home extends Component {
                 this.setState({ wrongEmail: false, confirmEmail: '' })
             } else {
                 this.setState({ wrongEmail: true })
-    
+
             }
         } else {
             let temp = this.state.addUrls
             temp.alternetUrl.splice(index, 1)
             this.setState({ addUrls: temp })
         }
-       
+
         this.disable()
     }
 
@@ -237,7 +239,7 @@ export default class Home extends Component {
         temp.baseUrl = event.target.value
         this.setState({ addUrls: temp })
         this.disable()
-      
+
     }
 
     changeCount(event) {
@@ -262,9 +264,8 @@ export default class Home extends Component {
                         !url.url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)) {
                         temp = true
                         message = 'Either you entered a wrong url or the count can not be more than 250 or less than 0.'
-                    } else if (url.url === this.state.addUrls.baseUrl || 
-                        (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) 
-                        {
+                    } else if (url.url === this.state.addUrls.baseUrl ||
+                        (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
                         temp = true
                         message = 'URL is not unique'
                     }
@@ -349,7 +350,7 @@ export default class Home extends Component {
             .then(res => {
                 let urls = res.data.payload
                 let baseUrls = urls.filter(url => url.baseurl === 1)
-                baseUrls.forEach((element) => {
+                baseUrls.forEach((element, i) => {
                     let showRedirectUrl = false
                     let alternetUrls = urls.filter(url => (url.baseUrlId === element.id))
                     if (element.participentCount < 250) {
@@ -361,30 +362,33 @@ export default class Home extends Component {
                         }
                     })
                     if (showRedirectUrl) {
-                        let webUrl = window.location.href.split('/');
-                        if (webUrl[2].split(':')[1] && webUrl[2].split(':')[1].length > 0) {
-                            element.redirectUrl = webUrl[0] + '//' + webUrl[2].split(':')[0] + ':8080' + element.redirectUrl
-                        } else {
-                            element.redirectUrl = webUrl[0] + '//' + webUrl[2] + element.redirectUrl
-                        }
+                        bitly.shorten('https://swlb.cloudkibo.com'+element.redirectUrl)
+                            .then(result => {
+                                element.redirectUrl = result.link
+                                this.setState({ baseUrls: baseUrls, copied: false })
+                            })
+                            .catch(function (error) {
+                                console.error(error);
+                            });
                         this.setState({ showRedirectUrl: true })
                     } else {
                         this.setState({ showRedirectUrl: false })
                         element.redirectUrl = 'Groups are full'
                     }
-                    // if(alternetUrl.length > 0)
                     let count = alternetUrls.length
                     element.alternetGroups = count
                 });
                 this.setState({ baseUrls: baseUrls, copied: false })
-
             })
             .catch(err => {
                 console.log(err)
             })
     }
 
+
+
     render() {
+        console.log(this.state.baseUrls)
         return (
             <span>
                 <div className='row'>
