@@ -25,7 +25,8 @@ export default class Home extends Component {
             },
             toBeAlternetDelete: 0,
             confirmEmail: '',
-            wrongEmail: false
+            wrongEmail: false,
+            alternetUrlChangeIndex: 0
         }
         this.getUser = this.getUser.bind(this);
         this.getUrl = this.getUrl.bind(this);
@@ -144,8 +145,6 @@ export default class Home extends Component {
                 data: this.state.toBeDelete
             })
             .then(res => {
-                console.log(this.state.toBeDelete)
-                console.log(res)
                 this.setState({ toBeDelete: {}, deleteAlert: true })
                 this.getUrl()
             })
@@ -156,9 +155,7 @@ export default class Home extends Component {
     }
 
     toBeDelete(url) {
-        console.log(url)
         this.setState({ toBeDelete: url })
-        console.log(this.state.toBeDelete)
     }
 
     deleteAtlernetUrl(index) {
@@ -170,12 +167,10 @@ export default class Home extends Component {
                 document.getElementById('alternetDelete').click()
                 this.setState({ wrongEmail: false, confirmEmail: '' })
             } else {
-                console.log('email not correct')
                 this.setState({ wrongEmail: true })
     
             }
         } else {
-            console.log(index)
             let temp = this.state.addUrls
             temp.alternetUrl.splice(index, 1)
             this.setState({ addUrls: temp })
@@ -203,25 +198,8 @@ export default class Home extends Component {
     alternetUrlChange(index, event) {
         let temp = this.state.addUrls
         temp.alternetUrl[index].url = event.target.value
-        this.setState({ addUrls: temp })
-        let a = false
-        this.state.addUrls.alternetUrl.forEach((url, i) => {
-            if (this.state.addUrls.baseUrl === event.target.value || (url.url === event.target.value && index !== i) ) {
-                a = true             
-            }
-        })
-        if(a) {
-            console.log('true')
-            this.setState({
-                disabled: true, msg: {
-                    message: 'URL is not unique',
-                    show: true
-                }
-            })
-        } else {
-            console.log('false')
-            this.disable()
-        }
+        this.setState({ addUrls: temp, alternetUrlChangeIndex: index })
+        this.disable()
     }
 
     addGroup() {
@@ -258,24 +236,7 @@ export default class Home extends Component {
         let temp = this.state.addUrls
         temp.baseUrl = event.target.value
         this.setState({ addUrls: temp })
-        let a = false
-        this.state.addUrls.alternetUrl.forEach((url, i) => {
-            if (url.url === this.state.addUrls.baseUrl) {
-                a = true             
-            }
-        })
-        if(a) {
-            console.log('true')
-            this.setState({
-                disabled: true, msg: {
-                    message: 'URL is not unique',
-                    show: true
-                }
-            })
-        } else {
-            console.log('false')
-            this.disable()
-        }
+        this.disable()
       
     }
 
@@ -293,18 +254,25 @@ export default class Home extends Component {
         ) {
             if (this.state.addUrls.alternetUrl.length > 0) {
                 let temp = false
-                this.state.addUrls.alternetUrl.forEach(url => {
+                let message = ''
+                this.state.addUrls.alternetUrl.forEach((url, i) => {
                     if (
                         url.url === '' ||
                         (url.count < 0 || url.count > 250) ||
                         !url.url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)) {
                         temp = true
+                        message = 'Either you entered a wrong url or the count can not be more than 250 or less than 0.'
+                    } else if (url.url === this.state.addUrls.baseUrl || 
+                        (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) 
+                        {
+                        temp = true
+                        message = 'URL is not unique'
                     }
                 })
                 if (temp) {
                     this.setState({
                         disabled: true, msg: {
-                            message: 'Either you entered a wrong url or the count can not be more than 250 or less than 0.',
+                            message: message,
                             show: true
                         }
                     })
@@ -408,7 +376,6 @@ export default class Home extends Component {
                     let count = alternetUrls.length
                     element.alternetGroups = count
                 });
-                console.log(baseUrls)
                 this.setState({ baseUrls: baseUrls, copied: false })
 
             })
