@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import jwt_decode from 'jwt-decode'
 const axios = require('axios');
 
+
 export default class Home extends Component {
     constructor() {
         super();
@@ -21,7 +22,10 @@ export default class Home extends Component {
             msg: {
                 message: '',
                 show: false
-            }
+            },
+            toBeAlternetDelete: 0,
+            confirmEmail: '',
+            wrongEmail: false
         }
         this.getUser = this.getUser.bind(this);
         this.getUrl = this.getUrl.bind(this);
@@ -40,6 +44,8 @@ export default class Home extends Component {
         this.toBeAdd = this.toBeAdd.bind(this)
         this.copyUrl = this.copyUrl.bind(this)
         this.disable = this.disable.bind(this)
+        this.toBeAlternetDelete = this.toBeAlternetDelete.bind(this)
+        this.confirmEmail = this.confirmEmail.bind(this)
     }
 
     copyUrl(url) {
@@ -117,10 +123,12 @@ export default class Home extends Component {
                         data.alternetUrl.push(temp)
                     }
                 })
-                this.setState({ addUrls: data, msg: {
-                    message: '',
-                    show: false
-                } })
+                this.setState({
+                    addUrls: data, msg: {
+                        message: '',
+                        show: false
+                    }
+                })
             })
             .catch(err => {
                 console.log(err)
@@ -153,11 +161,28 @@ export default class Home extends Component {
         console.log(this.state.toBeDelete)
     }
 
-    deleteAtlernetUrl(index) {
-        let temp = this.state.addUrls
-        temp.alternetUrl.splice(index, 1)
-        this.setState({ addUrls: temp })
+    deleteAtlernetUrl() {
+        if (this.state.email === this.state.confirmEmail) {
+            let temp = this.state.addUrls
+            temp.alternetUrl.splice(this.state.toBeAlternetDelete, 1)
+            this.setState({ addUrls: temp })
+            document.getElementById('alternetDelete').click()
+            this.setState({ wrongEmail: false, confirmEmail: '' })
+        } else {
+            console.log('email not correct')
+            this.setState({ wrongEmail: true})
+
+        }
         this.disable()
+    }
+
+    confirmEmail(e) {
+        this.setState({ confirmEmail: e.target.value })
+    }
+
+
+    toBeAlternetDelete(index) {
+        this.setState({ toBeAlternetDelete: index })
     }
 
     alternetCountChange(index, event) {
@@ -233,21 +258,21 @@ export default class Home extends Component {
                         temp = true
                     }
                 })
-                if(temp) {
-                this.setState({
-                    disabled: true, msg: {
-                        message: 'Either you entered a wrong url or the count can not be more than 250 or less than 0.',
-                        show: true
-                    }
-                })
-            } else {
-                this.setState({
-                    disabled: false, msg: {
-                        message: '',
-                        show: false
-                    }
-                })
-            }
+                if (temp) {
+                    this.setState({
+                        disabled: true, msg: {
+                            message: 'Either you entered a wrong url or the count can not be more than 250 or less than 0.',
+                            show: true
+                        }
+                    })
+                } else {
+                    this.setState({
+                        disabled: false, msg: {
+                            message: '',
+                            show: false
+                        }
+                    })
+                }
             } else {
                 this.setState({
                     disabled: false, msg: {
@@ -602,7 +627,7 @@ export default class Home extends Component {
                             </div>
                             <div className="modal-body">
                                 <div className='row'>
-                                {this.state.msg.show &&
+                                    {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                                             <div className="alert alert-danger" role="alert">
                                                 {this.state.msg.message}
@@ -663,7 +688,9 @@ export default class Home extends Component {
                                                         </div>
                                                         <div className='col-sm-2'>
                                                             <button type="button" className="btn btn-danger" style={{ height: '37px' }}
-                                                                onClick={() => this.deleteAtlernetUrl(i)}>
+                                                                data-toggle="modal"
+                                                                data-target="#alternetDelete"
+                                                                onClick={() => this.toBeAlternetDelete(i)}>
                                                                 <span className="material-icons">
                                                                     delete_forever
                                                                 </span>
@@ -682,6 +709,41 @@ export default class Home extends Component {
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="button" className="btn btn-primary" data-dismiss="modal" disabled={this.state.disabled} onClick={this.editURL}>Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* delete alternet modal */}
+                <div className="modal fade bd-example-modal-sm" id="alternetDelete" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div className="modal-dialog modal-sm" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLongTitle">Delete Confirmation</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            {this.state.wrongEmail &&
+                                <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                                    <div className="alert alert-danger" role="alert">
+                                        Email did not matched.
+                                    </div>
+                                </div>
+                            }
+                            <div className="modal-body">
+                                Are you sure you want to delete this group?
+                            </div>
+
+                            <input style={{ margin: 'auto', width: '90%' }}
+                                type="text"
+                                className="form-control"
+                                value={this.state.confirmEmail}
+                                onChange={this.confirmEmail}
+                                placeholder="Confirm By typing your email" />
+
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" onClick={() => this.deleteAtlernetUrl()}>Delete</button>
                             </div>
                         </div>
                     </div>
