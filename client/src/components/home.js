@@ -161,18 +161,26 @@ export default class Home extends Component {
         console.log(this.state.toBeDelete)
     }
 
-    deleteAtlernetUrl() {
-        if (this.state.email === this.state.confirmEmail) {
-            let temp = this.state.addUrls
-            temp.alternetUrl.splice(this.state.toBeAlternetDelete, 1)
-            this.setState({ addUrls: temp })
-            document.getElementById('alternetDelete').click()
-            this.setState({ wrongEmail: false, confirmEmail: '' })
+    deleteAtlernetUrl(index) {
+        if(index < 0) {
+            if (this.state.email === this.state.confirmEmail) {
+                let temp = this.state.addUrls
+                temp.alternetUrl.splice(this.state.toBeAlternetDelete, 1)
+                this.setState({ addUrls: temp })
+                document.getElementById('alternetDelete').click()
+                this.setState({ wrongEmail: false, confirmEmail: '' })
+            } else {
+                console.log('email not correct')
+                this.setState({ wrongEmail: true })
+    
+            }
         } else {
-            console.log('email not correct')
-            this.setState({ wrongEmail: true})
-
+            console.log(index)
+            let temp = this.state.addUrls
+            temp.alternetUrl.splice(index, 1)
+            this.setState({ addUrls: temp })
         }
+       
         this.disable()
     }
 
@@ -196,7 +204,24 @@ export default class Home extends Component {
         let temp = this.state.addUrls
         temp.alternetUrl[index].url = event.target.value
         this.setState({ addUrls: temp })
-        this.disable()
+        let a = false
+        this.state.addUrls.alternetUrl.forEach((url, i) => {
+            if (this.state.addUrls.baseUrl === event.target.value || (url.url === event.target.value && index !== i) ) {
+                a = true             
+            }
+        })
+        if(a) {
+            console.log('true')
+            this.setState({
+                disabled: true, msg: {
+                    message: 'URL is not unique',
+                    show: true
+                }
+            })
+        } else {
+            console.log('false')
+            this.disable()
+        }
     }
 
     addGroup() {
@@ -233,7 +258,25 @@ export default class Home extends Component {
         let temp = this.state.addUrls
         temp.baseUrl = event.target.value
         this.setState({ addUrls: temp })
-        this.disable()
+        let a = false
+        this.state.addUrls.alternetUrl.forEach((url, i) => {
+            if (url.url === this.state.addUrls.baseUrl) {
+                a = true             
+            }
+        })
+        if(a) {
+            console.log('true')
+            this.setState({
+                disabled: true, msg: {
+                    message: 'URL is not unique',
+                    show: true
+                }
+            })
+        } else {
+            console.log('false')
+            this.disable()
+        }
+      
     }
 
     changeCount(event) {
@@ -743,7 +786,7 @@ export default class Home extends Component {
 
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" onClick={() => this.deleteAtlernetUrl()}>Delete</button>
+                                <button type="button" className="btn btn-primary" onClick={() => this.deleteAtlernetUrl(-1)}>Delete</button>
                             </div>
                         </div>
                     </div>
