@@ -5,17 +5,34 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const mysql = require('mysql');
 const bodyParser = require('body-parser')
+var debug = require('debug')('wlb:server');
+const http = require('http')
+const https = require('https')
+const fs = require('fs')
+require('dotenv').config()
+
+var httpsApp = express()
+var httpApp = express()
+const app = (process.env.NODE_ENV === 'production') ? httpsApp : httpApp
+let options = {
+  ca: '',
+  key: '',
+  cert: ''
+}
+if (process.env.NODE_ENV === 'production') {
+  try {
+    options = {
+      ca: fs.readFileSync('/root/certs/swlb.ca-bundle'),
+      key: fs.readFileSync('/root/certs/swlb.key'),
+      cert: fs.readFileSync('/root/certs/swlb.crt')
+    }
+  } catch (e) {
+  }
+}
 
 const usersRouter = require('./api/user');
 const authRouter = require('./api/authentication/')
 const urlRouter = require('./api/urls')
-
-const app = express();
-
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -67,5 +84,23 @@ app.use(function(err, req, res, next) {
     }
   })
 });
+
+const server = http.createServer(httpApp)
+const httpsServer = https.createServer(options, httpsApp)
+if (process.env.NODE_ENV === 'production') {
+  httpApp.get('*', (req, res) => {
+    res.redirect(`${process.env.DOMAIN}${req.url}`)
+  })
+}
+// listen for requests :)
+server.listen(process.env.PORT, process.env.IP, () => {
+  console.log(`WLB server STARTED on ${
+    process.env.PORT} in ${process.env.NODE_ENV} mode on domain ${process.env.DOMAIN}`)
+})
+httpsServer.listen(process.env.SECURE_PORT, () => {
+  console.log(`WLB server STARTED on ${
+    process.env.SECURE_PORT} in ${process.env.NODE_ENV} mode on domain ${process.env.DOMAIN}`)
+})
+
 
 module.exports = app;
