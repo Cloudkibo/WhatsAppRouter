@@ -55,7 +55,11 @@ app.use((req, res, next) => {
   }
   next()
 })
-
+if (process.env.NODE_ENV === 'production') {
+  httpApp.get('*', (req, res) => {
+    res.redirect(`${process.env.DOMAIN}${req.url}`)
+  })
+}
 app.use('/urls', urlRouter)
 app.use('/users', usersRouter);
 app.use('/', authRouter);
@@ -87,11 +91,7 @@ app.use(function(err, req, res, next) {
 
 const server = http.createServer(httpApp)
 const httpsServer = https.createServer(options, httpsApp)
-if (process.env.NODE_ENV === 'production') {
-  httpApp.get('*', (req, res) => {
-    res.redirect(`${process.env.DOMAIN}${req.url}`)
-  })
-}
+
 // listen for requests :)
 server.listen(process.env.PORT, process.env.IP, () => {
   console.log(`WLB server STARTED on ${
