@@ -7,9 +7,9 @@ exports.all = {
 exports.pool = mysql.createPool({
     connectionLimit: 100,
     host     : 'localhost',
-    user     : 'root',
-    password : '',
-    database: 'WLB'
+    user     : process.env.DATABASE_USER,
+    password : process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME
   })
 
   exports.successresponse = (response, status, description, payload) => {
