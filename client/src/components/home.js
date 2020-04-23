@@ -146,7 +146,8 @@ export default class Home extends Component {
     }
 
     deleteUrl() {
-        axios
+        if(this.state.email === this.state.confirmEmail) {
+            axios
             .delete('/urls/', {
                 headers: {
                     "Authorization": `Bearer ${localStorage.userToken}`
@@ -154,17 +155,20 @@ export default class Home extends Component {
                 data: this.state.toBeDelete
             })
             .then(res => {
-                this.setState({ toBeDelete: {}, deleteAlert: true })
                 this.getUrl()
+                this.setState({ toBeDelete: {}, deleteAlert: true, wrongEmail: false, confirmEmail: '' })
+                document.getElementById('delete').click()
             })
             .catch(err => {
                 console.log(err)
             })
-
+        } else {
+            this.setState({ wrongEmail: true })
+        }
     }
 
     toBeDelete(url) {
-        this.setState({ toBeDelete: url })
+        this.setState({ toBeDelete: url, wrongEmail: false, confirmEmail: ''  })
     }
 
     deleteAtlernetUrl(index) {
@@ -194,7 +198,7 @@ export default class Home extends Component {
 
 
     toBeAlternetDelete(index) {
-        this.setState({ toBeAlternetDelete: index })
+        this.setState({ toBeAlternetDelete: index, wrongEmail: false, confirmEmail: '' })
     }
 
     alternetCountChange(index, event) {
@@ -667,12 +671,26 @@ export default class Home extends Component {
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
+                            {this.state.wrongEmail &&
+                                <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                                    <div className="alert alert-danger" role="alert">
+                                        Email did not matched.
+                                    </div>
+                                </div>
+                            }
                             <div className="modal-body">
-                                Are you sure you want to delete ?
+                                Are you sure you want to delete this group?
                             </div>
+
+                            <input style={{ margin: 'auto', width: '90%' }}
+                                type="text"
+                                className="form-control"
+                                value={this.state.confirmEmail}
+                                onChange={this.confirmEmail}
+                                placeholder="Confirm By typing your email" />
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.deleteUrl}>Delete</button>
+                                <button type="button" className="btn btn-primary" onClick={this.deleteUrl}>Delete</button>
                             </div>
                         </div>
                     </div>
