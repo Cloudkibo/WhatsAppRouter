@@ -14,6 +14,7 @@ export default class Home extends Component {
             email: '',
             baseUrls: [],
             addUrls: {
+                name: "",
                 baseUrl: "",
                 count: 0,
                 alternetUrl: []
@@ -34,10 +35,12 @@ export default class Home extends Component {
         this.getUrl = this.getUrl.bind(this);
         this.logOut = this.logOut.bind(this);
         this.changeBaseUrl = this.changeBaseUrl.bind(this);
+        this.changeBaseName = this.changeBaseName.bind(this)
         this.changeCount = this.changeCount.bind(this);
         this.addUrl = this.addUrl.bind(this);
         this.addGroup = this.addGroup.bind(this);
         this.alternetUrlChange = this.alternetUrlChange.bind(this);
+        this.alternetNameChange = this.alternetNameChange.bind(this)
         this.alternetCountChange = this.alternetCountChange.bind(this);
         this.deleteAtlernetUrl = this.deleteAtlernetUrl.bind(this)
         this.deleteUrl = this.deleteUrl.bind(this)
@@ -67,6 +70,7 @@ export default class Home extends Component {
     toBeAdd() {
         this.setState({
             addUrls: {
+                name: "",
                 baseUrl: "",
                 count: 0,
                 alternetUrl: []
@@ -85,6 +89,7 @@ export default class Home extends Component {
             .then(res => {
                 this.setState({
                     addUrls: {
+                        name: "",
                         baseUrl: "",
                         count: 0,
                         alternetUrl: []
@@ -111,6 +116,7 @@ export default class Home extends Component {
             })
             .then(res => {
                 let data = {
+                    name: '',
                     baseUrl: '',
                     count: 0,
                     id: 0,
@@ -118,11 +124,12 @@ export default class Home extends Component {
                 }
                 res.data.payload.forEach(element => {
                     if (!element.baseUrlId) {
+                        data.name = element.name
                         data.baseUrl = element.url
                         data.count = element.participentCount
                         data.id = element.id
                     } else {
-                        let temp = { id: element.id, url: element.url, count: element.participentCount }
+                        let temp = { id: element.id, name: element.name, url: element.url, count: element.participentCount }
                         data.alternetUrl.push(temp)
                     }
                 })
@@ -178,7 +185,7 @@ export default class Home extends Component {
             this.setState({ addUrls: temp })
         }
 
-        this.disable()
+        // this.disable()
     }
 
     confirmEmail(e) {
@@ -204,12 +211,18 @@ export default class Home extends Component {
         this.disable()
     }
 
+    alternetNameChange(index, event) {
+        let temp = this.state.addUrls
+        temp.alternetUrl[index].name = event.target.value
+        this.setState({ addUrls: temp, alternetUrlChangeIndex: index })
+        this.disable()
+    }
+
     addGroup() {
         let temp = this.state.addUrls
-        let data = { url: '', count: 0 }
+        let data = { name: '', url: '', count: 0 }
         temp.alternetUrl.push(data)
         this.setState({ addUrls: temp, disabled: true })
-        this.disable()
     }
 
     addUrl() {
@@ -220,7 +233,7 @@ export default class Home extends Component {
                 }
             })
             .then(res => {
-                this.setState({ addUrls: { baseUrl: "", count: 0, alternetUrl: [] } })
+                this.setState({ addUrls: { name: '', baseUrl: "", count: 0, alternetUrl: [] } })
                 this.setState({
                     deleteAlert: false, disabled: true, msg: {
                         message: '',
@@ -241,6 +254,13 @@ export default class Home extends Component {
         this.disable()
 
     }
+    changeBaseName(event) {
+        let temp = this.state.addUrls
+        temp.name = event.target.value
+        this.setState({ addUrls: temp })
+        this.disable()
+
+    }
 
     changeCount(event) {
         let temp = this.state.addUrls
@@ -250,8 +270,13 @@ export default class Home extends Component {
     }
 
     disable() {
-        if (this.state.addUrls.baseUrl !== ''
-            && (this.state.addUrls.count >= 0 || this.state.addUrls.count <= 250)
+        console.log(this.state.addUrls)
+        let baseCount = parseInt(this.state.addUrls.count, 10)
+        console.log(baseCount)
+        if (this.state.addUrls.baseUrl !== '' 
+            &&  (this.state.addUrls.name !== '')
+            && (baseCount >= 0)
+            && (baseCount <= 250)
             && this.state.addUrls.baseUrl.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)
         ) {
             if (this.state.addUrls.alternetUrl.length > 0) {
@@ -259,11 +284,12 @@ export default class Home extends Component {
                 let message = ''
                 this.state.addUrls.alternetUrl.forEach((url, i) => {
                     if (
-                        url.url === '' ||
+                        (url.url === '') ||
+                        (url.name === '') ||
                         (url.count < 0 || url.count > 250) ||
-                        !url.url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)) {
+                        (!url.url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/))) {
                         temp = true
-                        message = 'Either you entered a wrong url or the count can not be more than 250 or less than 0.'
+                        message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
                     } else if (url.url === this.state.addUrls.baseUrl ||
                         (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
                         temp = true
@@ -272,9 +298,9 @@ export default class Home extends Component {
                 })
                 if (temp) {
                     this.setState({
-                        disabled: true, msg: {
+                        disabled: temp, msg: {
                             message: message,
-                            show: true
+                            show: temp
                         }
                     })
                 } else {
@@ -296,7 +322,7 @@ export default class Home extends Component {
         } else {
             this.setState({
                 disabled: true, msg: {
-                    message: 'Either you entered a wrong url or the count can not be more than 250 or less than 0.',
+                    message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
                     show: true
                 }
             })
@@ -362,7 +388,7 @@ export default class Home extends Component {
                         }
                     })
                     if (showRedirectUrl) {
-                        bitly.shorten('https://swlb.cloudkibo.com'+element.redirectUrl)
+                        bitly.shorten('https://swlb.cloudkibo.com' + element.redirectUrl)
                             .then(result => {
                                 element.redirectUrl = result.link
                                 this.setState({ baseUrls: baseUrls, copied: false })
@@ -388,7 +414,6 @@ export default class Home extends Component {
 
 
     render() {
-        console.log(this.state.baseUrls)
         return (
             <span>
                 <div className='row'>
@@ -439,6 +464,7 @@ export default class Home extends Component {
                         <table className="table" style={{ width: '90%', margin: '30px 0px 0px 5%' }}>
                             <thead>
                                 <tr className="table-active">
+                                    <th scope="col">Group Name</th>
                                     <th scope="col">Base URL</th>
                                     <th scope="col">Alternet Groups</th>
                                     <th scope="col">Redirect Link</th>
@@ -451,6 +477,7 @@ export default class Home extends Component {
                                         this.state.baseUrls.map((url, i) =>
                                             (
                                                 <tr key={i}>
+                                                    <td>{url.name}</td>
                                                     <td>{url.url}</td>
                                                     <td>{url.alternetGroups}</td>
                                                     <td>{url.redirectUrl}</td>
@@ -532,7 +559,7 @@ export default class Home extends Component {
                                             </div>
                                         </div>
                                     }
-                                    <div className='col-sm-8'>
+                                    <div className='col-sm-12'>
                                         <div className="form-group">
                                             <label>Base Group URL</label>
                                             <input
@@ -542,6 +569,18 @@ export default class Home extends Component {
                                                 value={this.state.addUrls.baseUrl}
                                                 onChange={this.changeBaseUrl}
                                                 placeholder="Enter Base Group URL" />
+                                        </div>
+                                    </div>
+                                    <div className='col-sm-8'>
+                                        <div className="form-group">
+                                            <label>Base Group Name</label>
+                                            <input
+                                                type="text"
+                                                name="baseUrl"
+                                                className="form-control"
+                                                value={this.state.addUrls.name}
+                                                onChange={this.changeBaseName}
+                                                placeholder="Enter Base Group Name" />
                                         </div>
                                     </div>
                                     <div className='col-sm-4'>
@@ -564,7 +603,7 @@ export default class Home extends Component {
                                             (
                                                 <span className='col-sm-12' key={i}>
                                                     <div className='row'>
-                                                        <div className='col-sm-6'>
+                                                        <div className='col-sm-12'>
                                                             <div className="form-group">
                                                                 <input
                                                                     type="text"
@@ -572,6 +611,16 @@ export default class Home extends Component {
                                                                     value={item.url}
                                                                     onChange={(e) => this.alternetUrlChange(i, e)}
                                                                     placeholder="Enter Alterner Group URL" />
+                                                            </div>
+                                                        </div>
+                                                        <div className='col-sm-6'>
+                                                            <div className="form-group">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control"
+                                                                    value={item.name}
+                                                                    onChange={(e) => this.alternetNameChange(i, e)}
+                                                                    placeholder="Enter Group Name" />
                                                             </div>
                                                         </div>
                                                         <div className='col-sm-4'>
@@ -593,6 +642,7 @@ export default class Home extends Component {
                                                             </button>
                                                         </div>
                                                     </div>
+                                                    <hr />
                                                 </span>
                                             )
                                         )
@@ -648,7 +698,7 @@ export default class Home extends Component {
                                             </div>
                                         </div>
                                     }
-                                    <div className='col-sm-8'>
+                                    <div className='col-sm-12'>
                                         <div className="form-group">
                                             <label>Base Group URL</label>
                                             <input
@@ -658,6 +708,18 @@ export default class Home extends Component {
                                                 value={this.state.addUrls.baseUrl}
                                                 onChange={this.changeBaseUrl}
                                                 placeholder="Enter Base Group URL" />
+                                        </div>
+                                    </div>
+                                    <div className='col-sm-8'>
+                                        <div className="form-group">
+                                            <label>Base Group Name</label>
+                                            <input
+                                                type="text"
+                                                name="baseUrl"
+                                                className="form-control"
+                                                value={this.state.addUrls.name}
+                                                onChange={this.changeBaseName}
+                                                placeholder="Enter Base Group Name" />
                                         </div>
                                     </div>
                                     <div className='col-sm-4'>
@@ -680,7 +742,7 @@ export default class Home extends Component {
                                             (
                                                 <span className='col-sm-12' key={i}>
                                                     <div className='row'>
-                                                        <div className='col-sm-6'>
+                                                        <div className='col-sm-12'>
                                                             <div className="form-group">
                                                                 <input
                                                                     type="text"
@@ -688,6 +750,16 @@ export default class Home extends Component {
                                                                     value={item.url}
                                                                     onChange={(e) => this.alternetUrlChange(i, e)}
                                                                     placeholder="Enter Alterner Group URL" />
+                                                            </div>
+                                                        </div>
+                                                        <div className='col-sm-6'>
+                                                            <div className="form-group">
+                                                                <input
+                                                                    type="text"
+                                                                    className="form-control"
+                                                                    value={item.name}
+                                                                    onChange={(e) => this.alternetNameChange(i, e)}
+                                                                    placeholder="Enter Alterner Group Name" />
                                                             </div>
                                                         </div>
                                                         <div className='col-sm-4'>
@@ -711,6 +783,7 @@ export default class Home extends Component {
                                                             </button>
                                                         </div>
                                                     </div>
+                                                    <hr />
                                                 </span>
                                             )
                                         )
