@@ -21,7 +21,6 @@ export default class Home extends Component {
             },
             toBeDelete: {},
             toBeAdd: {},
-            disabled: true,
             msg: {
                 message: '',
                 show: false
@@ -74,7 +73,12 @@ export default class Home extends Component {
                 baseUrl: "",
                 count: 0,
                 alternetUrl: []
+            },
+            msg: {
+                message: '',
+                show: false
             }
+
         })
     }
 
@@ -93,14 +97,9 @@ export default class Home extends Component {
                         baseUrl: "",
                         count: 0,
                         alternetUrl: []
-                    },
-                    disabled: true,
-                    msg: {
-                        message: '',
-                        show: false
                     }
-
                 })
+                document.getElementById('edit').click()
                 setTimeout(() => { this.getUrl() }, 500)
             })
             .catch(err => {
@@ -188,8 +187,6 @@ export default class Home extends Component {
             temp.alternetUrl.splice(index, 1)
             this.setState({ addUrls: temp })
         }
-
-        // this.disable()
     }
 
     confirmEmail(e) {
@@ -205,32 +202,29 @@ export default class Home extends Component {
         let temp = this.state.addUrls
         temp.alternetUrl[index].count = event.target.value
         this.setState({ addUrls: temp })
-        this.disable()
     }
 
     alternetUrlChange(index, event) {
         let temp = this.state.addUrls
         temp.alternetUrl[index].url = event.target.value
         this.setState({ addUrls: temp, alternetUrlChangeIndex: index })
-        this.disable()
     }
 
     alternetNameChange(index, event) {
         let temp = this.state.addUrls
         temp.alternetUrl[index].name = event.target.value
         this.setState({ addUrls: temp, alternetUrlChangeIndex: index })
-        this.disable()
     }
 
     addGroup() {
         let temp = this.state.addUrls
         let data = { name: '', url: '', count: 0 }
         temp.alternetUrl.push(data)
-        this.setState({ addUrls: temp, disabled: true })
+        this.setState({ addUrls: temp})
     }
 
     addUrl() {
-        axios
+            axios
             .post(`/urls/`, this.state.addUrls, {
                 headers: {
                     "Authorization": `Bearer ${localStorage.userToken}`
@@ -239,41 +233,36 @@ export default class Home extends Component {
             .then(res => {
                 this.setState({ addUrls: { name: '', baseUrl: "", count: 0, alternetUrl: [] } })
                 this.setState({
-                    deleteAlert: false, disabled: true, msg: {
+                    deleteAlert: false, msg: {
                         message: '',
                         show: false
                     }
                 })
+                document.getElementById('addUrl').click()
                 this.getUrl()
             })
             .catch(err => {
                 console.log(err)
             })
-
     }
     changeBaseUrl(event) {
         let temp = this.state.addUrls
         temp.baseUrl = event.target.value
         this.setState({ addUrls: temp })
-        this.disable()
-
     }
     changeBaseName(event) {
         let temp = this.state.addUrls
         temp.name = event.target.value
         this.setState({ addUrls: temp })
-        this.disable()
-
     }
 
     changeCount(event) {
         let temp = this.state.addUrls
         temp.count = event.target.value
         this.setState({ addUrls: temp })
-        this.disable()
     }
 
-    disable() {
+    disable(type) {
         let baseCount = parseInt(this.state.addUrls.count, 10)
         if (this.state.addUrls.baseUrl !== '' 
             &&  (this.state.addUrls.name !== '')
@@ -300,22 +289,26 @@ export default class Home extends Component {
                 })
                 if (temp) {
                     this.setState({
-                        disabled: temp, msg: {
+                        msg: {
                             message: message,
                             show: temp
                         }
                     })
                 } else {
+                    if(type === 'addurl') this.addUrl()
+                    else this.editURL()
                     this.setState({
-                        disabled: false, msg: {
+                        msg: {
                             message: '',
                             show: false
                         }
                     })
                 }
             } else {
+                if(type === 'addurl') this.addUrl()
+                else this.editURL()
                 this.setState({
-                    disabled: false, msg: {
+                    msg: {
                         message: '',
                         show: false
                     }
@@ -323,7 +316,7 @@ export default class Home extends Component {
             }
         } else {
             this.setState({
-                disabled: true, msg: {
+                msg: {
                     message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
                     show: true
                 }
@@ -656,7 +649,7 @@ export default class Home extends Component {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-dismiss="modal" disabled={this.state.disabled} onClick={this.addUrl}>Add URL</button>
+                                <button type="button" className="btn btn-primary" onClick={() => this.disable('addurl')}>Add URL</button>
                             </div>
                         </div>
                     </div>
@@ -811,7 +804,7 @@ export default class Home extends Component {
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" data-dismiss="modal" disabled={this.state.disabled} onClick={this.editURL}>Save changes</button>
+                                <button type="button" className="btn btn-primary" onClick={() => this.disable('editurl')}>Save changes</button>
                             </div>
                         </div>
                     </div>
