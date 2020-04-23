@@ -270,9 +270,7 @@ export default class Home extends Component {
     }
 
     disable() {
-        console.log(this.state.addUrls)
         let baseCount = parseInt(this.state.addUrls.count, 10)
-        console.log(baseCount)
         if (this.state.addUrls.baseUrl !== '' 
             &&  (this.state.addUrls.name !== '')
             && (baseCount >= 0)
