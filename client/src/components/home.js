@@ -87,7 +87,11 @@ export default class Home extends Component {
                         count: 0,
                         alternetUrl: []
                     },
-                    editAlert: true
+                    editAlert: true,
+                    changeInEdit: {
+                        isBaseURLChanged: false,
+                        alternetChangeIndex: []
+                    }
                 })
                 document.getElementById('edit').click()
                 setTimeout(() => { this.getUrl() }, 500)
@@ -238,7 +242,11 @@ export default class Home extends Component {
                         message: '',
                         show: false
                     },
-                    createAlert: true
+                    createAlert: true,
+                    changeInEdit: {
+                        isBaseURLChanged: false,
+                        alternetChangeIndex: []
+                    }
                 })
                 document.getElementById('addUrl').click()
                 this.getUrl()
