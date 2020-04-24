@@ -83,7 +83,7 @@ export default class Home extends Component {
     }
 
     editURL() {
-        this.setState({ deleteAlert: false })
+        this.setState({ deleteAlert: false, createAlert: false })
         axios
             .put('/urls/', this.state.addUrls, {
                 headers: {
@@ -97,7 +97,8 @@ export default class Home extends Component {
                         baseUrl: "",
                         count: 0,
                         alternetUrl: []
-                    }
+                    },
+                    editAlert : true
                 })
                 document.getElementById('edit').click()
                 setTimeout(() => { this.getUrl() }, 500)
@@ -155,7 +156,7 @@ export default class Home extends Component {
             })
             .then(res => {
                 this.getUrl()
-                this.setState({ toBeDelete: {}, deleteAlert: true, wrongEmail: false, confirmEmail: '' })
+                this.setState({ toBeDelete: {}, deleteAlert: true, editAlert: false, createAlert: false, wrongEmail: false, confirmEmail: '' })
                 document.getElementById('delete').click()
             })
             .catch(err => {
@@ -233,10 +234,11 @@ export default class Home extends Component {
             .then(res => {
                 this.setState({ addUrls: { name: '', baseUrl: "", count: 0, alternetUrl: [] } })
                 this.setState({
-                    deleteAlert: false, msg: {
+                    deleteAlert: false, editAlert: false, msg: {
                         message: '',
                         show: false
-                    }
+                    },
+                    createAlert: true
                 })
                 document.getElementById('addUrl').click()
                 this.getUrl()
@@ -433,17 +435,31 @@ export default class Home extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div style={{ width: '90%'}} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.deleteAlert &&
                             <div className="alert alert-success" role="alert">
                                 Deleted URL Successfully!
                         </div>
                         }
                     </div>
-                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div style={{ width: '90%'}} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.copied &&
                             <div className="alert alert-primary" role="alert">
                                 Redirect Link Copied!
+                        </div>
+                        }
+                    </div>
+                    <div style={{ width: '90%'}} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                        {this.state.editAlert &&
+                            <div className="alert alert-success" role="alert">
+                                URL Edited Successfully!
+                        </div>
+                        }
+                    </div>
+                    <div style={{ width: '90%'}} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                        {this.state.createAlert &&
+                            <div className="alert alert-success" role="alert">
+                                URL Created Successfully!
                         </div>
                         }
                     </div>
