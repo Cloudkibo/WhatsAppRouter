@@ -12,6 +12,7 @@ export default class Home extends Component {
             firstname: '',
             lastname: '',
             email: '',
+            allUrls: [],
             baseUrls: [],
             addUrls: {
                 name: "",
@@ -28,7 +29,11 @@ export default class Home extends Component {
             toBeAlternetDelete: 0,
             confirmEmail: '',
             wrongEmail: false,
-            alternetUrlChangeIndex: 0
+            alternetUrlChangeIndex: 0,
+            changeInEdit: {
+                isBaseURLChanged: false,
+                alternetChangeIndex: []
+            }
         }
         this.getUser = this.getUser.bind(this);
         this.getUrl = this.getUrl.bind(this);
@@ -66,22 +71,6 @@ export default class Home extends Component {
         this.setState({ copied: true })
     }
 
-    toBeAdd() {
-        this.setState({
-            addUrls: {
-                name: "",
-                baseUrl: "",
-                count: 0,
-                alternetUrl: []
-            },
-            msg: {
-                message: '',
-                show: false
-            }
-
-        })
-    }
-
     editURL() {
         this.setState({ deleteAlert: false, createAlert: false })
         axios
@@ -98,7 +87,7 @@ export default class Home extends Component {
                         count: 0,
                         alternetUrl: []
                     },
-                    editAlert : true
+                    editAlert: true
                 })
                 document.getElementById('edit').click()
                 setTimeout(() => { this.getUrl() }, 500)
@@ -137,7 +126,8 @@ export default class Home extends Component {
                     addUrls: data, msg: {
                         message: '',
                         show: false
-                    }
+                    },
+                    alternetUrlChangeIndex: 0
                 })
             })
             .catch(err => {
@@ -146,29 +136,29 @@ export default class Home extends Component {
     }
 
     deleteUrl() {
-        if(this.state.email === this.state.confirmEmail) {
+        if (this.state.email === this.state.confirmEmail) {
             axios
-            .delete('/urls/', {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.userToken}`
-                },
-                data: this.state.toBeDelete
-            })
-            .then(res => {
-                this.getUrl()
-                this.setState({ toBeDelete: {}, deleteAlert: true, editAlert: false, createAlert: false, wrongEmail: false, confirmEmail: '' })
-                document.getElementById('delete').click()
-            })
-            .catch(err => {
-                console.log(err)
-            })
+                .delete('/urls/', {
+                    headers: {
+                        "Authorization": `Bearer ${localStorage.userToken}`
+                    },
+                    data: this.state.toBeDelete
+                })
+                .then(res => {
+                    this.getUrl()
+                    this.setState({ toBeDelete: {}, deleteAlert: true, editAlert: false, createAlert: false, wrongEmail: false, confirmEmail: '' })
+                    document.getElementById('delete').click()
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         } else {
             this.setState({ wrongEmail: true })
         }
     }
 
     toBeDelete(url) {
-        this.setState({ toBeDelete: url, wrongEmail: false, confirmEmail: ''  })
+        this.setState({ toBeDelete: url, wrongEmail: false, confirmEmail: '' })
     }
 
     deleteAtlernetUrl(index) {
@@ -208,7 +198,17 @@ export default class Home extends Component {
     alternetUrlChange(index, event) {
         let temp = this.state.addUrls
         temp.alternetUrl[index].url = event.target.value
-        this.setState({ addUrls: temp, alternetUrlChangeIndex: index })
+        let array = this.state.changeInEdit
+        let already = false
+        array.alternetChangeIndex.forEach(element => {
+            if (element === index) {
+                already = true
+            }
+        })
+        if (!already) {
+            array.alternetChangeIndex.push(index)
+        }
+        this.setState({ addUrls: temp, alternetUrlChangeIndex: index, changeIndex: array })
     }
 
     alternetNameChange(index, event) {
@@ -221,11 +221,11 @@ export default class Home extends Component {
         let temp = this.state.addUrls
         let data = { name: '', url: '', count: 0 }
         temp.alternetUrl.push(data)
-        this.setState({ addUrls: temp})
+        this.setState({ addUrls: temp })
     }
 
     addUrl() {
-            axios
+        axios
             .post(`/urls/`, this.state.addUrls, {
                 headers: {
                     "Authorization": `Bearer ${localStorage.userToken}`
@@ -244,13 +244,40 @@ export default class Home extends Component {
                 this.getUrl()
             })
             .catch(err => {
-                console.log(err)
+                if (err.response.status === 400) {
+                    this.setState({
+                        msg: {
+                            message: err.response.data.error,
+                            show: true
+                        }
+                    })
+                }
+                console.log(err.response)
             })
     }
+
+    toBeAdd() {
+        this.setState({
+            addUrls: {
+                name: "",
+                baseUrl: "",
+                count: 0,
+                alternetUrl: []
+            },
+            msg: {
+                message: '',
+                show: false
+            }
+
+        })
+    }
+
     changeBaseUrl(event) {
         let temp = this.state.addUrls
         temp.baseUrl = event.target.value
-        this.setState({ addUrls: temp })
+        let change = this.state.changeInEdit
+        change.isBaseURLChanged = true
+        this.setState({ addUrls: temp, changeInEdit: change })
     }
     changeBaseName(event) {
         let temp = this.state.addUrls
@@ -265,64 +292,114 @@ export default class Home extends Component {
     }
 
     disable(type) {
-        let baseCount = parseInt(this.state.addUrls.count, 10)
-        if (this.state.addUrls.baseUrl !== '' 
-            &&  (this.state.addUrls.name !== '')
-            && (baseCount >= 0)
-            && (baseCount <= 250)
-            && this.state.addUrls.baseUrl.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)
-        ) {
-            if (this.state.addUrls.alternetUrl.length > 0) {
-                let temp = false
-                let message = ''
-                this.state.addUrls.alternetUrl.forEach((url, i) => {
-                    if (
-                        (url.url === '') ||
-                        (url.name === '') ||
-                        (url.count < 0 || url.count > 250) ||
-                        (!url.url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/))) {
+        console.log(this.state.allUrls)
+        if (this.state.allUrls.length > 0) {
+            let temp = false
+            let message = ''
+            this.state.allUrls.forEach(element => {
+                if (type === 'addurl') {
+                    if (this.state.addUrls.baseUrl !== element.url) {
+                        this.state.addUrls.alternetUrl.forEach((alternet, i) => {
+                            if (alternet.url === element.url) {
+                                temp = true
+                                message = alternet.name + ' Group invitation URL already exists in database'
+                            }
+                        })
+                    } else {
                         temp = true
-                        message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
-                    } else if (url.url === this.state.addUrls.baseUrl ||
-                        (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
-                        temp = true
-                        message = 'URL is not unique'
+                        message = this.state.addUrls.name + ' Group invitation URL already exists in database'
                     }
-                })
-                if (temp) {
-                    this.setState({
-                        msg: {
-                            message: message,
-                            show: temp
-                        }
-                    })
-                } else {
-                    if(type === 'addurl') this.addUrl()
-                    else this.editURL()
-                    this.setState({
-                        msg: {
-                            message: '',
-                            show: false
-                        }
-                    })
                 }
-            } else {
-                if(type === 'addurl') this.addUrl()
-                else this.editURL()
-                this.setState({
-                    msg: {
-                        message: '',
-                        show: false
+                else {
+                    console.log(this.state.changeInEdit)
+                    if (this.state.changeInEdit.isBaseURLChanged) {
+                        if (this.state.addUrls.baseUrl !== element.url) {
+                        } else {
+                            temp = true
+                            message = this.state.addUrls.name + ' Group invitation URL already exists in database'
+                        }
+                    } else {
+                        if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
+                            this.state.changeInEdit.alternetChangeIndex.forEach(index => {
+                                console.log(this.state.addUrls.alternetUrl[index].url)
+                                if (this.state.addUrls.alternetUrl[index].url === element.url) {
+                                    console.log('i am here')
+                                    temp = true
+                                    message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
+                                }
+                            })
+                        }
                     }
-                })
-            }
-        } else {
-            this.setState({
-                msg: {
-                    message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
-                    show: true
                 }
             })
+            if (temp) {
+                this.setState({
+                    msg: {
+                        message: message,
+                        show: temp
+                    }
+                })
+            } else {
+                let baseCount = parseInt(this.state.addUrls.count, 10)
+                if (this.state.addUrls.baseUrl !== ''
+                    && (this.state.addUrls.name !== '')
+                    && (baseCount >= 0)
+                    && (baseCount <= 250)
+                    && this.state.addUrls.baseUrl.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)
+                ) {
+                    if (this.state.addUrls.alternetUrl.length > 0) {
+                        let temp = false
+                        let message = ''
+                        this.state.addUrls.alternetUrl.forEach((url, i) => {
+                            if (
+                                (url.url === '') ||
+                                (url.name === '') ||
+                                (url.count < 0 || url.count > 250) ||
+                                (!url.url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/))) {
+                                temp = true
+                                message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
+                            } else if (url.url === this.state.addUrls.baseUrl ||
+                                (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
+                                temp = true
+                                message = 'URL is not unique'
+                            }
+                        })
+                        if (temp) {
+                            this.setState({
+                                msg: {
+                                    message: message,
+                                    show: temp
+                                }
+                            })
+                        } else {
+                            if (type === 'addurl') this.addUrl()
+                            else this.editURL()
+                            this.setState({
+                                msg: {
+                                    message: '',
+                                    show: false
+                                }
+                            })
+                        }
+                    } else {
+                        if (type === 'addurl') this.addUrl()
+                        else this.editURL()
+                        this.setState({
+                            msg: {
+                                message: '',
+                                show: false
+                            }
+                        })
+                    }
+                } else {
+                    this.setState({
+                        msg: {
+                            message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
+                            show: true
+                        }
+                    })
+                }
+            }
         }
     }
 
@@ -372,6 +449,7 @@ export default class Home extends Component {
             })
             .then(res => {
                 let urls = res.data.payload
+                this.setState({ allUrls: urls })
                 let baseUrls = urls.filter(url => url.baseurl === 1)
                 baseUrls.forEach((element, i) => {
                     let showRedirectUrl = false
@@ -435,28 +513,28 @@ export default class Home extends Component {
                             </div>
                         </div>
                     </div>
-                    <div style={{ width: '90%'}} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div style={{ width: '90%' }} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.deleteAlert &&
                             <div className="alert alert-success" role="alert">
                                 Deleted URL Successfully!
                         </div>
                         }
                     </div>
-                    <div style={{ width: '90%'}} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div style={{ width: '90%' }} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.copied &&
                             <div className="alert alert-primary" role="alert">
                                 Redirect Link Copied!
                         </div>
                         }
                     </div>
-                    <div style={{ width: '90%'}} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div style={{ width: '90%' }} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.editAlert &&
                             <div className="alert alert-success" role="alert">
                                 URL Edited Successfully!
                         </div>
                         }
                     </div>
-                    <div style={{ width: '90%'}} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div style={{ width: '90%' }} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.createAlert &&
                             <div className="alert alert-success" role="alert">
                                 URL Created Successfully!
