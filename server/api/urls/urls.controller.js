@@ -53,7 +53,7 @@ exports.post = (req, res, next) => {
         } else {
             let data = {
                 name: req.body.name,
-                url: req.body.baseUrl,
+                url: req.body.baseUrl.replace(/\s/g, ''),
                 participentCount: req.body.count,
                 baseurl: true,
                 userId: req.user.userId,
@@ -68,7 +68,7 @@ exports.post = (req, res, next) => {
                     req.body.alternetUrl.forEach(element => {
                         let data = {
                             name: element.name,
-                            url: element.url,
+                            url: element.url.replace(/\s/g, ''),
                             participentCount: element.count,
                             baseurl: false,
                             userId: req.user.userId,
@@ -109,7 +109,7 @@ exports.put = (req, res, next) => {
                         if (!element.id) {
                             let data = {
                                 name: element.name,
-                                url: element.url,
+                                url: element.url.replace(/\s/g, ''),
                                 participentCount: element.count,
                                 baseurl: false,
                                 userId: req.user.userId,
@@ -121,7 +121,7 @@ exports.put = (req, res, next) => {
                             urls = urls.filter(url => !(url.id === element.id))
                             let data = [
                                 element.name,
-                                element.url,
+                                element.url.replace(/\s/g, ''),
                                 element.count,
                                 element.id
                             ]
@@ -135,7 +135,7 @@ exports.put = (req, res, next) => {
                     })
                     let data = [
                         req.body.name,
-                        req.body.baseUrl,
+                        req.body.baseUrl.replace(/\s/g, ''),
                         req.body.count,
                         req.body.id
                     ]
