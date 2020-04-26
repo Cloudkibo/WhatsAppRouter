@@ -29,6 +29,8 @@ if (process.env.NODE_ENV === 'production') {
   } catch (e) {
   }
 }
+// set the view engine to ejs
+app.set('view engine', 'ejs');
 
 const usersRouter = require('./api/user');
 const authRouter = require('./api/authentication/')
