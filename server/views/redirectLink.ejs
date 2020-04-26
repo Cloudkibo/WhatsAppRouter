@@ -7,6 +7,10 @@
 </head>
 
 <body>
-    <a href="<%= url %>">Download</a>
+    <a id="yourLinkID" href="<%= url %>">Download</a>
+
+    <script>
+        document.getElementById('yourLinkID').click();
+    </script>
 </body>
 </html>
