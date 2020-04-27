@@ -55,6 +55,7 @@ export default class Home extends Component {
         this.copyUrl = this.copyUrl.bind(this)
         this.disable = this.disable.bind(this)
         this.toBeAlternetDelete = this.toBeAlternetDelete.bind(this)
+        this.checkWhatspUrl = this.checkWhatspUrl.bind(this)
         this.confirmEmail = this.confirmEmail.bind(this)
     }
 
@@ -349,7 +350,7 @@ export default class Home extends Component {
                     && (this.state.addUrls.name !== '')
                     && (baseCount >= 0)
                     && (baseCount <= 250)
-                    && this.state.addUrls.baseUrl.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)
+                    && this.checkWhatspUrl(this.state.addUrls.baseUrl)
                 ) {
                     if (this.state.addUrls.alternetUrl.length > 0) {
                         let temp = false
@@ -359,7 +360,8 @@ export default class Home extends Component {
                                 (url.url === '') ||
                                 (url.name === '') ||
                                 (url.count < 0 || url.count > 250) ||
-                                (!url.url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/))) {
+                                !this.checkWhatspUrl(url.url) )
+                                {
                                 temp = true
                                 message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
                             } else if (url.url === this.state.addUrls.baseUrl ||
@@ -404,6 +406,16 @@ export default class Home extends Component {
                     })
                 }
             }
+    }
+
+    checkWhatspUrl (url) {
+      if(url.includes('invite')) 
+      {
+        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/invite?\/[a-zA-Z0-9_\-]+/)
+      }
+      else {
+        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)
+      }
     }
 
     componentDidMount() {
