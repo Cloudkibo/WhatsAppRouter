@@ -63,12 +63,11 @@ export default class Home extends Component {
     }
 
     search(event) {
-        console.log(event.target.value)
         if (this.state.dataForSearch.length > 0) {
             let searchArray = []
             if (event.target.value !== '') {
                 this.state.dataForSearch.forEach(element => {
-                    if (element.name.includes(event.target.value)) searchArray.push(element)
+                    if (element.name.toLowerCase().includes(event.target.value.toLowerCase())) searchArray.push(element)
                 })
                 this.setState({ baseUrls: searchArray })
             } else {
@@ -425,11 +424,13 @@ export default class Home extends Component {
         }
     }
 
-    getGroupID(url) {
+       getGroupID(url) {
         let split = url.split('/')
         let groupId = split[split.length - 1]
+        if(groupId === '') {
+            groupId = split[split.length -2]
+        }
         return groupId
-
     }
 
    
