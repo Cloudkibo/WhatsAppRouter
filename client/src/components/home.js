@@ -305,9 +305,9 @@ export default class Home extends Component {
             let message = ''
             this.state.allUrls.forEach(element => {
                 if (type === 'addurl') {
-                    if (this.state.addUrls.baseUrl !== element.url) {
+                    if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
                         this.state.addUrls.alternetUrl.forEach((alternet, i) => {
-                            if (alternet.url === element.url) {
+                            if (alternet.url.replace(/\s/g, '') === element.url) {
                                 temp = true
                                 message = alternet.name + ' Group invitation URL already exists in database'
                             }
@@ -319,7 +319,7 @@ export default class Home extends Component {
                 }
                 else {
                     if (this.state.changeInEdit.isBaseURLChanged) {
-                        if (this.state.addUrls.baseUrl !== element.url) {
+                        if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
                         } else {
                             temp = true
                             message = this.state.addUrls.name + ' Group invitation URL already exists in database'
@@ -327,7 +327,7 @@ export default class Home extends Component {
                     } else {
                         if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
                             this.state.changeInEdit.alternetChangeIndex.forEach(index => {
-                                if (this.state.addUrls.alternetUrl[index].url === element.url) {
+                                if (this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '') === element.url) {
                                     temp = true
                                     message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
                                 }
