@@ -318,7 +318,6 @@ export default class Home extends Component {
                     }
                 }
                 else {
-                    console.log(this.state.changeInEdit)
                     if (this.state.changeInEdit.isBaseURLChanged) {
                         if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
                         } else {
@@ -328,9 +327,7 @@ export default class Home extends Component {
                     } else {
                         if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
                             this.state.changeInEdit.alternetChangeIndex.forEach(index => {
-                                console.log(this.state.addUrls.alternetUrl[index].url)
                                 if (this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '') === element.url) {
-                                    console.log('i am here')
                                     temp = true
                                     message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
                                 }

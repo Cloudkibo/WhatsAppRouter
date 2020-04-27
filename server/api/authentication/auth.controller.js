@@ -93,11 +93,7 @@ exports.login = (req, res, next) => {
                                 const token = jwt.sign({
                                     email: user[0].email,
                                     userId: user[0].userId
-                                },
-                                    config.all.JWT_KEY,
-                                    {
-                                        expiresIn: '1h'
-                                    }
+                                },config.all.JWT_KEY
                                 )
                                 let payload = {
                                     userId: user[0].userId,
