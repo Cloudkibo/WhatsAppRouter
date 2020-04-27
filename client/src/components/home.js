@@ -14,6 +14,7 @@ export default class Home extends Component {
             email: '',
             allUrls: [],
             baseUrls: [],
+            dataForSearch: [],
             addUrls: {
                 name: "",
                 baseUrl: "",
@@ -57,6 +58,22 @@ export default class Home extends Component {
         this.toBeAlternetDelete = this.toBeAlternetDelete.bind(this)
         this.checkWhatspUrl = this.checkWhatspUrl.bind(this)
         this.confirmEmail = this.confirmEmail.bind(this)
+        this.search = this.search.bind(this)
+    }
+
+    search(event) {
+        console.log(event.target.value)
+        if (this.state.dataForSearch.length > 0) {
+            let searchArray = []
+            if (event.target.value !== '') {
+                this.state.dataForSearch.forEach(element => {
+                    if (element.name.includes(event.target.value)) searchArray.push(element)
+                })
+                this.setState({ baseUrls: searchArray })
+            } else {
+                this.getUrl()
+            }
+        }
     }
 
     copyUrl(url) {
@@ -302,91 +319,80 @@ export default class Home extends Component {
 
     disable(type) {
         console.log(this.state.allUrls)
-            let temp = false
-            let message = ''
-            this.state.allUrls.forEach(element => {
-                if (type === 'addurl') {
+        let temp = false
+        let message = ''
+        this.state.allUrls.forEach(element => {
+            if (type === 'addurl') {
+                if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
+                    this.state.addUrls.alternetUrl.forEach((alternet, i) => {
+                        if (alternet.url.replace(/\s/g, '') === element.url) {
+                            temp = true
+                            message = alternet.name + ' Group invitation URL already exists in database'
+                        }
+                    })
+                } else {
+                    temp = true
+                    message = this.state.addUrls.name + ' Group invitation URL already exists in database'
+                }
+            }
+            else {
+                if (this.state.changeInEdit.isBaseURLChanged) {
                     if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
-                        this.state.addUrls.alternetUrl.forEach((alternet, i) => {
-                            if (alternet.url.replace(/\s/g, '') === element.url) {
-                                temp = true
-                                message = alternet.name + ' Group invitation URL already exists in database'
-                            }
-                        })
                     } else {
                         temp = true
                         message = this.state.addUrls.name + ' Group invitation URL already exists in database'
                     }
-                }
-                else {
-                    if (this.state.changeInEdit.isBaseURLChanged) {
-                        if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
-                        } else {
-                            temp = true
-                            message = this.state.addUrls.name + ' Group invitation URL already exists in database'
-                        }
-                    } else {
-                        if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
-                            this.state.changeInEdit.alternetChangeIndex.forEach(index => {
-                                if (this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '') === element.url) {
-                                    temp = true
-                                    message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
-                                }
-                            })
-                        }
-                    }
-                }
-            })
-            if (temp) {
-                this.setState({
-                    msg: {
-                        message: message,
-                        show: temp
-                    }
-                })
-            } else {
-                let baseCount = parseInt(this.state.addUrls.count, 10)
-                if (this.state.addUrls.baseUrl !== ''
-                    && (this.state.addUrls.name !== '')
-                    && (baseCount >= 0)
-                    && (baseCount <= 250)
-                    && this.checkWhatspUrl(this.state.addUrls.baseUrl)
-                ) {
-                    if (this.state.addUrls.alternetUrl.length > 0) {
-                        let temp = false
-                        let message = ''
-                        this.state.addUrls.alternetUrl.forEach((url, i) => {
-                            if (
-                                (url.url === '') ||
-                                (url.name === '') ||
-                                (url.count < 0 || url.count > 250) ||
-                                !this.checkWhatspUrl(url.url) )
-                                {
+                } else {
+                    if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
+                        this.state.changeInEdit.alternetChangeIndex.forEach(index => {
+                            if (this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '') === element.url) {
                                 temp = true
-                                message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
-                            } else if (url.url === this.state.addUrls.baseUrl ||
-                                (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
-                                temp = true
-                                message = 'URL is not unique'
+                                message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
                             }
                         })
-                        if (temp) {
-                            this.setState({
-                                msg: {
-                                    message: message,
-                                    show: temp
-                                }
-                            })
-                        } else {
-                            if (type === 'addurl') this.addUrl()
-                            else this.editURL()
-                            this.setState({
-                                msg: {
-                                    message: '',
-                                    show: false
-                                }
-                            })
+                    }
+                }
+            }
+        })
+        if (temp) {
+            this.setState({
+                msg: {
+                    message: message,
+                    show: temp
+                }
+            })
+        } else {
+            let baseCount = parseInt(this.state.addUrls.count, 10)
+            if (this.state.addUrls.baseUrl !== ''
+                && (this.state.addUrls.name !== '')
+                && (baseCount >= 0)
+                && (baseCount <= 250)
+                && this.checkWhatspUrl(this.state.addUrls.baseUrl)
+            ) {
+                if (this.state.addUrls.alternetUrl.length > 0) {
+                    let temp = false
+                    let message = ''
+                    this.state.addUrls.alternetUrl.forEach((url, i) => {
+                        if (
+                            (url.url === '') ||
+                            (url.name === '') ||
+                            (url.count < 0 || url.count > 250) ||
+                            !this.checkWhatspUrl(url.url)) {
+                            temp = true
+                            message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
+                        } else if (url.url === this.state.addUrls.baseUrl ||
+                            (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
+                            temp = true
+                            message = 'URL is not unique'
                         }
+                    })
+                    if (temp) {
+                        this.setState({
+                            msg: {
+                                message: message,
+                                show: temp
+                            }
+                        })
                     } else {
                         if (type === 'addurl') this.addUrl()
                         else this.editURL()
@@ -398,14 +404,24 @@ export default class Home extends Component {
                         })
                     }
                 } else {
+                    if (type === 'addurl') this.addUrl()
+                    else this.editURL()
                     this.setState({
                         msg: {
-                            message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
-                            show: true
+                            message: '',
+                            show: false
                         }
                     })
                 }
+            } else {
+                this.setState({
+                    msg: {
+                        message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
+                        show: true
+                    }
+                })
             }
+        }
     }
 
     checkWhatspUrl (url) {
@@ -481,7 +497,7 @@ export default class Home extends Component {
                         bitly.shorten('https://swlb.cloudkibo.com' + element.redirectUrl)
                             .then(result => {
                                 element.redirectUrl = result.link
-                                this.setState({ baseUrls: baseUrls, copied: false })
+                                this.setState({ baseUrls: baseUrls, dataForSearch: baseUrls, copied: false })
                             })
                             .catch(function (error) {
                                 console.error(error);
@@ -494,7 +510,7 @@ export default class Home extends Component {
                     let count = alternetUrls.length
                     element.alternetGroups = count
                 });
-                this.setState({ baseUrls: baseUrls, copied: false })
+                this.setState({ baseUrls: baseUrls,dataForSearch: baseUrls, copied: false })
             })
             .catch(err => {
                 console.log(err)
@@ -557,14 +573,22 @@ export default class Home extends Component {
                         }
                     </div>
                     <div className='col-sm-12'>
-                        <button type="button"
-                            data-toggle="modal"
-                            data-target="#addUrl"
-                            style={{ marginRight: '5%', marginBottom: '4px' }}
-                            className="btn btn-primary pull-right"
-                            onClick={this.toBeAdd}>
-                            Add URL
-                        </button>
+                        <div className='row' style={{ width: '100%', margin: '0px 0px 0px 4%' }}>
+                            <div className='col-sm-10'>
+                                <input className="form-control" onChange={this.search} type="text" placeholder="Search" aria-label="Search" />
+                            </div>
+                            <div className='col-sm-2'>
+                                <button type="button"
+                                    data-toggle="modal"
+                                    data-target="#addUrl"
+                                    className="btn btn-primary"
+                                    onClick={this.toBeAdd}>
+                                    Add URL
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className='col-sm-12'>
                         <table className="table" style={{ width: '90%', margin: '30px 0px 0px 5%' }}>
                             <thead>
                                 <tr className="table-active">
