@@ -301,7 +301,6 @@ export default class Home extends Component {
 
     disable(type) {
         console.log(this.state.allUrls)
-        if (this.state.allUrls.length > 0) {
             let temp = false
             let message = ''
             this.state.allUrls.forEach(element => {
@@ -408,7 +407,6 @@ export default class Home extends Component {
                     })
                 }
             }
-        }
     }
 
     componentDidMount() {
