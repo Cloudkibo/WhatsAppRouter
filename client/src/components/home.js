@@ -58,6 +58,7 @@ export default class Home extends Component {
         this.toBeAlternetDelete = this.toBeAlternetDelete.bind(this)
         this.checkWhatspUrl = this.checkWhatspUrl.bind(this)
         this.confirmEmail = this.confirmEmail.bind(this)
+        this.getGroupID = this.getGroupID.bind(this)
         this.search = this.search.bind(this)
     }
 
@@ -323,9 +324,9 @@ export default class Home extends Component {
         let message = ''
         this.state.allUrls.forEach(element => {
             if (type === 'addurl') {
-                if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
+                if (this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) !==  this.getGroupID(element.url)) {
                     this.state.addUrls.alternetUrl.forEach((alternet, i) => {
-                        if (alternet.url.replace(/\s/g, '') === element.url) {
+                        if (this.getGroupID(alternet.url.replace(/\s/g, '')) === this.getGroupID(element.url)) {
                             temp = true
                             message = alternet.name + ' Group invitation URL already exists in database'
                         }
@@ -337,7 +338,7 @@ export default class Home extends Component {
             }
             else {
                 if (this.state.changeInEdit.isBaseURLChanged) {
-                    if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
+                    if (this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) !== this.getGroupID(element.url)) {
                     } else {
                         temp = true
                         message = this.state.addUrls.name + ' Group invitation URL already exists in database'
@@ -345,7 +346,7 @@ export default class Home extends Component {
                 } else {
                     if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
                         this.state.changeInEdit.alternetChangeIndex.forEach(index => {
-                            if (this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '') === element.url) {
+                            if (this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) === this.getGroupID(element.url)) {
                                 temp = true
                                 message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
                             }
@@ -424,6 +425,14 @@ export default class Home extends Component {
         }
     }
 
+    getGroupID(url) {
+        let split = url.split('/')
+        let groupId = split[split.length - 1]
+        return groupId
+
+    }
+
+   
     checkWhatspUrl (url) {
       if(url.includes('invite')) 
       {
@@ -678,7 +687,7 @@ export default class Home extends Component {
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body" style={{ maxHeight: '444px', overflow: 'auto' }}>
                                 <div className='row'>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
@@ -831,7 +840,7 @@ export default class Home extends Component {
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body" style={{ maxHeight: '444px', overflow: 'auto' }}>
                                 <div className='row'>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
