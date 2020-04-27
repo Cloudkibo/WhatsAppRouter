@@ -57,6 +57,7 @@ export default class Home extends Component {
         this.toBeAlternetDelete = this.toBeAlternetDelete.bind(this)
         this.checkWhatspUrl = this.checkWhatspUrl.bind(this)
         this.confirmEmail = this.confirmEmail.bind(this)
+        this.getGroupID = this.getGroupID.bind(this)
     }
 
     copyUrl(url) {
@@ -302,91 +303,80 @@ export default class Home extends Component {
 
     disable(type) {
         console.log(this.state.allUrls)
-            let temp = false
-            let message = ''
-            this.state.allUrls.forEach(element => {
-                if (type === 'addurl') {
-                    if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
-                        this.state.addUrls.alternetUrl.forEach((alternet, i) => {
-                            if (alternet.url.replace(/\s/g, '') === element.url) {
-                                temp = true
-                                message = alternet.name + ' Group invitation URL already exists in database'
-                            }
-                        })
+        let temp = false
+        let message = ''
+        this.state.allUrls.forEach(element => {
+            if (type === 'addurl') {
+                if (this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) !==  this.getGroupID(element.url)) {
+                    this.state.addUrls.alternetUrl.forEach((alternet, i) => {
+                        if (this.getGroupID(alternet.url.replace(/\s/g, '')) === this.getGroupID(element.url)) {
+                            temp = true
+                            message = alternet.name + ' Group invitation URL already exists in database'
+                        }
+                    })
+                } else {
+                    temp = true
+                    message = this.state.addUrls.name + ' Group invitation URL already exists in database'
+                }
+            }
+            else {
+                if (this.state.changeInEdit.isBaseURLChanged) {
+                    if (this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) !== this.getGroupID(element.url)) {
                     } else {
                         temp = true
                         message = this.state.addUrls.name + ' Group invitation URL already exists in database'
                     }
-                }
-                else {
-                    if (this.state.changeInEdit.isBaseURLChanged) {
-                        if (this.state.addUrls.baseUrl.replace(/\s/g, '') !== element.url) {
-                        } else {
-                            temp = true
-                            message = this.state.addUrls.name + ' Group invitation URL already exists in database'
-                        }
-                    } else {
-                        if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
-                            this.state.changeInEdit.alternetChangeIndex.forEach(index => {
-                                if (this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '') === element.url) {
-                                    temp = true
-                                    message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
-                                }
-                            })
-                        }
-                    }
-                }
-            })
-            if (temp) {
-                this.setState({
-                    msg: {
-                        message: message,
-                        show: temp
-                    }
-                })
-            } else {
-                let baseCount = parseInt(this.state.addUrls.count, 10)
-                if (this.state.addUrls.baseUrl !== ''
-                    && (this.state.addUrls.name !== '')
-                    && (baseCount >= 0)
-                    && (baseCount <= 250)
-                    && this.checkWhatspUrl(this.state.addUrls.baseUrl)
-                ) {
-                    if (this.state.addUrls.alternetUrl.length > 0) {
-                        let temp = false
-                        let message = ''
-                        this.state.addUrls.alternetUrl.forEach((url, i) => {
-                            if (
-                                (url.url === '') ||
-                                (url.name === '') ||
-                                (url.count < 0 || url.count > 250) ||
-                                !this.checkWhatspUrl(url.url) )
-                                {
+                } else {
+                    if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
+                        this.state.changeInEdit.alternetChangeIndex.forEach(index => {
+                            if (this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) === this.getGroupID(element.url)) {
                                 temp = true
-                                message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
-                            } else if (url.url === this.state.addUrls.baseUrl ||
-                                (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
-                                temp = true
-                                message = 'URL is not unique'
+                                message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
                             }
                         })
-                        if (temp) {
-                            this.setState({
-                                msg: {
-                                    message: message,
-                                    show: temp
-                                }
-                            })
-                        } else {
-                            if (type === 'addurl') this.addUrl()
-                            else this.editURL()
-                            this.setState({
-                                msg: {
-                                    message: '',
-                                    show: false
-                                }
-                            })
+                    }
+                }
+            }
+        })
+        if (temp) {
+            this.setState({
+                msg: {
+                    message: message,
+                    show: temp
+                }
+            })
+        } else {
+            let baseCount = parseInt(this.state.addUrls.count, 10)
+            if (this.state.addUrls.baseUrl !== ''
+                && (this.state.addUrls.name !== '')
+                && (baseCount >= 0)
+                && (baseCount <= 250)
+                && this.checkWhatspUrl(this.state.addUrls.baseUrl)
+            ) {
+                if (this.state.addUrls.alternetUrl.length > 0) {
+                    let temp = false
+                    let message = ''
+                    this.state.addUrls.alternetUrl.forEach((url, i) => {
+                        if (
+                            (url.url === '') ||
+                            (url.name === '') ||
+                            (url.count < 0 || url.count > 250) ||
+                            !this.checkWhatspUrl(url.url)) {
+                            temp = true
+                            message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
+                        } else if (url.url === this.state.addUrls.baseUrl ||
+                            (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
+                            temp = true
+                            message = 'URL is not unique'
                         }
+                    })
+                    if (temp) {
+                        this.setState({
+                            msg: {
+                                message: message,
+                                show: temp
+                            }
+                        })
                     } else {
                         if (type === 'addurl') this.addUrl()
                         else this.editURL()
@@ -398,24 +388,39 @@ export default class Home extends Component {
                         })
                     }
                 } else {
+                    if (type === 'addurl') this.addUrl()
+                    else this.editURL()
                     this.setState({
                         msg: {
-                            message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
-                            show: true
+                            message: '',
+                            show: false
                         }
                     })
                 }
+            } else {
+                this.setState({
+                    msg: {
+                        message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
+                        show: true
+                    }
+                })
             }
+        }
     }
 
-    checkWhatspUrl (url) {
-      if(url.includes('invite')) 
-      {
-        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/invite?\/[a-zA-Z0-9_\-]+/)
-      }
-      else {
-        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)
-      }
+    getGroupID(url) {
+        let split = url.split('/')
+        let groupId = split[split.length - 1]
+        return groupId
+    }
+
+    checkWhatspUrl(url) {
+        if (url.includes('invite')) {
+            return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/invite?\/[a-zA-Z0-9_\-]+/)
+        }
+        else {
+            return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/\S*(\?v=|\/v\/)?[a-zA-Z0-9_\-]+/)
+        }
     }
 
     componentDidMount() {
@@ -654,7 +659,7 @@ export default class Home extends Component {
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body" style={{ maxHeight: '444px', overflow: 'auto' }}>
                                 <div className='row'>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
@@ -807,7 +812,7 @@ export default class Home extends Component {
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div className="modal-body">
+                            <div className="modal-body" style={{ maxHeight: '444px', overflow: 'auto' }}>
                                 <div className='row'>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
