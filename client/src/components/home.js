@@ -437,10 +437,10 @@ export default class Home extends Component {
     checkWhatspUrl (url) {
       if(url.includes('invite')) 
       {
-        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/invite?\/[a-zA-Z0-9_\-]+(\/)?$/)
+        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/invite?\/([a-zA-Z0-9_\-]{22}$)+(\/)?$/)
       }
       else {
-        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/[a-zA-Z0-9_\-]+(\/)?$/)
+        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/([a-zA-Z0-9_\-]{22}$)+(\/)?$/)
       }
     }
 
