@@ -32,10 +32,6 @@ if (process.env.NODE_ENV === 'production') {
 // set the view engine to ejs
 app.set('view engine', 'ejs');
 
-const usersRouter = require('./api/user');
-const authRouter = require('./api/authentication/')
-const urlRouter = require('./api/urls')
-
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -62,9 +58,9 @@ if (process.env.NODE_ENV === 'production') {
     res.redirect(`${process.env.DOMAIN}${req.url}`)
   })
 }
-app.use('/urls', urlRouter)
-app.use('/users', usersRouter);
-app.use('/', authRouter);
+app.use('/urls', require('./api/urls'))
+app.use('/users', require('./api/user'));
+app.use('/auth', require('./auth/index'))
 app.get('/*', function (req, res) {
   res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });

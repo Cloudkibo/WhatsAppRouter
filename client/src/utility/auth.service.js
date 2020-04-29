@@ -1,35 +1,49 @@
-const axios = require('axios');
+import cookie from 'react-cookies'
 
+const  auth = {
+    getToken() {
+        return cookie.load('token')
+    },
 
+    getUserId() {
+      return cookie.load('userId')
+    },
 
-export const register = newUser => {
-    return axios
-        .post(`/signup`,{
-            firstname: newUser.firstname,
-            lastname: newUser.lastname,
-            email: newUser.email,
-            phone: newUser.phone,
-            password: newUser.password,
-            confirmPassword: newUser.confirmPassword
-        })
-        .then(res => {
-            console.log("Registered!", res)
-            return res
-        })
+    putCookie(val) {
+        cookie.save('token', val)
+    },
+
+    putUserId(val) {
+        cookie.save('userid', val)
+    },
+
+    logout(cb) {
+        cookie.remove('token')
+        cookie.remove('userId')
+        // redirectToLogoutAccounts()
+        if (cb) cb()
+    },
+
+    loggedIn() {
+        const userId = cookie.load('userId')
+        const token = cookie.load('token')
+        return !(typeof token === 'undefined' || token === '' || typeof userId === 'undefined' || userId === '')
+    }
 }
 
-export const login = user => {
-    return axios
-        .post(`/login`,{
-            email: user.email,  
-            password: user.password,
-        })
-        .then(res => {
-            return res
-        })
-        .catch(error => {
-            console.log(error)
-        })
+function redirectToLogoutAccounts() {
+    let redirectUrls = {
+        'wlb': 'https://wlb.cloudkibo.com/auth/logout',
+        'swlb': 'https://swlb.cloudkibo.com/auth/logout',
+        'localhost': 'http://localhost:3000/auth/logout'
+    }
+    let products = Object.keys(redirectUrls)
+    for (let i = 0; i < products.length; i++) {
+        if (window.location.href.includes(products[i])) {
+            window.location.replace(redirectUrls[products[i]])
+            break
+        }
+    }
 }
 
-export default login
+export default auth

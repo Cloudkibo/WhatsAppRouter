@@ -1,22 +1,22 @@
 var express = require('express');
 const controller = require('./users.controller')
-const middleware = require('../../middleware/check.auth')
+const authService = require('../../auth/auth.service.js')
 
 var router = express.Router();
 
 /* GET users listing. */
-router.get('/', 
-middleware.checkAuth,
+router.get('/',
+authService.isAuthenticated,
 controller.get
 );
 
-router.get('/:id', 
-middleware.checkAuth,
+router.get('/:id',
+authService.isAuthenticated,
 controller.getById
 )
 
-router.put('/:id', 
-middleware.checkAuth,
+router.put('/:id',
+authService.isAuthenticated,
 controller.put
 );
 

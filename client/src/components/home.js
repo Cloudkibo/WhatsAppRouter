@@ -3,7 +3,7 @@ import jwt_decode from 'jwt-decode'
 const axios = require('axios');
 const BitlyClient = require('bitly').BitlyClient;
 const bitly = new BitlyClient('4e26e6edc4f5f7145e9bf33d728083c0decdf12b');
-
+const auth = require('../utility/auth.service.js')
 
 export default class Home extends Component {
     constructor() {
@@ -93,9 +93,10 @@ export default class Home extends Component {
         this.setState({ deleteAlert: false, createAlert: false })
         axios
             .put('/urls/', this.state.addUrls, {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.userToken}`
-                }
+              headers: {
+            "Authorization": `${auth.default.getToken()}`,
+            "userId": `${auth.default.getUserId()}`
+          }
             })
             .then(res => {
                 this.setState({
@@ -115,15 +116,19 @@ export default class Home extends Component {
                 setTimeout(() => { this.getUrl() }, 500)
             })
             .catch(err => {
+              if(err.response.status === 401){
+                window.location.reload();
+              }
             })
     }
 
     toBeEdit(url) {
         axios
             .get(`/urls/${url.id}`, {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.userToken}`
-                },
+              headers: {
+            "Authorization": `${auth.default.getToken()}`,
+            "userId": `${auth.default.getUserId()}`
+          }
             })
             .then(res => {
                 let data = {
@@ -153,6 +158,9 @@ export default class Home extends Component {
                 })
             })
             .catch(err => {
+              if(err.response.status === 401){
+                window.location.reload();
+              }
                 console.log(err)
             })
     }
@@ -161,10 +169,11 @@ export default class Home extends Component {
         if (this.state.email === this.state.confirmEmail) {
             axios
                 .delete('/urls/', {
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.userToken}`
-                    },
-                    data: this.state.toBeDelete
+                  headers: {
+                "Authorization": `${auth.default.getToken()}`,
+                "userId": `${auth.default.getUserId()}`
+                },
+                  data: this.state.toBeDelete
                 })
                 .then(res => {
                     this.getUrl()
@@ -172,6 +181,9 @@ export default class Home extends Component {
                     document.getElementById('delete').click()
                 })
                 .catch(err => {
+                  if(err.response.status === 401){
+                    window.location.reload();
+                  }
                     console.log(err)
                 })
         } else {
@@ -249,9 +261,10 @@ export default class Home extends Component {
     addUrl() {
         axios
             .post(`/urls/`, this.state.addUrls, {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.userToken}`
-                }
+              headers: {
+            "Authorization": `${auth.default.getToken()}`,
+            "userId": `${auth.default.getUserId()}`
+          }
             })
             .then(res => {
                 this.setState({ addUrls: { name: '', baseUrl: "", count: 0, alternetUrl: [] } })
@@ -270,6 +283,9 @@ export default class Home extends Component {
                 this.getUrl()
             })
             .catch(err => {
+              if(err.response.status === 401){
+                window.location.reload();
+              }
                 if (err.response.status === 400) {
                     this.setState({
                         msg: {
@@ -433,9 +449,9 @@ export default class Home extends Component {
         return groupId
     }
 
-   
+
     checkWhatspUrl (url) {
-      if(url.includes('invite')) 
+      if(url.includes('invite'))
       {
         return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/invite?\/([a-zA-Z0-9_\-]{22}$)+(\/)?$/)
       }
@@ -445,28 +461,26 @@ export default class Home extends Component {
     }
 
     componentDidMount() {
-        if (!localStorage.userToken) {
-            this.props.history.push('/sign-in')
-        } else {
-            const token = localStorage.userToken
-            const decode = jwt_decode(token)
-            this.getUser(decode.userId)
-            this.setState({ deleteAlert: false })
-            this.getUrl()
+        if (auth.default.getUserId()) {
+          const userId = auth.default.getUserId()
+          this.getUser(userId)
+          this.setState({ deleteAlert: false })
+          this.getUrl()
         }
-
     }
 
     logOut() {
+        auth.default.logout()
         localStorage.removeItem('userToken')
     }
 
     getUser(userId) {
         axios
             .get(`/users/${userId}`, {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.userToken}`
-                }
+              headers: {
+            "Authorization": `${auth.default.getToken()}`,
+            "userId": `${auth.default.getUserId()}`
+          }
             })
             .then(res => {
                 this.setState({
@@ -476,6 +490,9 @@ export default class Home extends Component {
                 })
             })
             .catch(err => {
+              if(err.response.status === 401){
+                window.location.reload();
+              }
                 console.log(err)
             })
     }
@@ -484,9 +501,10 @@ export default class Home extends Component {
     getUrl() {
         axios
             .get(`/urls/`, {
-                headers: {
-                    "Authorization": `Bearer ${localStorage.userToken}`
-                }
+              headers: {
+            "Authorization": `${auth.default.getToken()}`,
+            "userId": `${auth.default.getUserId()}`
+          }
             })
             .then(res => {
                 let urls = res.data.payload
@@ -523,7 +541,10 @@ export default class Home extends Component {
                 this.setState({ baseUrls: baseUrls,dataForSearch: baseUrls, copied: false })
             })
             .catch(err => {
-                console.log(err)
+              if(err.response.status === 401){
+                window.location.reload();
+              }
+                console.log('i am the one',err.response)
             })
     }
 

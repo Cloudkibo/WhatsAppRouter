@@ -62,6 +62,7 @@ exports.post = (req, res, next) => {
             connection.query(sql, data, (error, url) => {
                 if (error) {
                     connection.release()
+                    console.log(error)
                     return config.errorResponse(res, 400, 'Failed to query database.', error.sqlMessage)
                 } else {
                     let promise = []
