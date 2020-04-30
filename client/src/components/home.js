@@ -166,7 +166,7 @@ export default class Home extends Component {
     }
 
     deleteUrl() {
-        if (this.state.email === this.state.confirmEmail) {
+        if (this.state.email.toLowerCase() === this.state.confirmEmail.toLowerCase()) {
             axios
                 .delete('/urls/', {
                   headers: {
@@ -197,7 +197,7 @@ export default class Home extends Component {
 
     deleteAtlernetUrl(index) {
         if (index < 0) {
-            if (this.state.email === this.state.confirmEmail) {
+            if (this.state.email.toLowerCase() === this.state.confirmEmail.toLowerCase()) {
                 let temp = this.state.addUrls
                 temp.alternetUrl.splice(this.state.toBeAlternetDelete, 1)
                 this.setState({ addUrls: temp })
