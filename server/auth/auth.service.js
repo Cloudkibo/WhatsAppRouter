@@ -22,7 +22,16 @@ function isAuthenticated(req, res, next) {
         let token = req.headers.authorization
         req.user = {userId: userId}
         verify(token)
-        next();
+        .then( () => {
+          console.log('Successfully verified the token')
+          next();
+        })
+        .catch(err => {
+          console.log('Error Verifying token')
+          res.clearCookie("token");
+          res.clearCookie("userId");
+          return res.status(401).json({message: 'Access Token Expired Please Sign In Again.'})
+        })
     } catch (error){
         console.log('i am in google', error)
         res.clearCookie("token");
