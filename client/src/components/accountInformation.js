@@ -1,8 +1,13 @@
 import React, { Component } from "react";
 import jwt_decode from 'jwt-decode'
 import { Alert } from 'reactstrap';
+import  { Redirect } from 'react-router-dom'
+
 const axios = require('axios');
-export default class accountInformation extends Component {
+const auth = require('../utility/auth.service.js')
+
+
+export default class AccountInformation extends Component {
     constructor() {
         super();
         this.state = {
@@ -22,25 +27,25 @@ export default class accountInformation extends Component {
     }
 
     componentDidMount() {
-        if(!localStorage.userToken){
-            this.props.history.push('/sign-in')
-        } else {
-            const token = localStorage.userToken
-            const decode = jwt_decode(token)
-            console.log(decode)
-        axios.get(`/users/${decode.userId}`, {
-            headers: {
-            "Authorization": `Bearer ${localStorage.userToken}`
-            }
-            })
-        .then(res => {
-            let payload = res.data.payload[0]
-            this.setState({fName: payload.firstname, lName: payload.lastname, phoneNo: payload.phone, email: payload.email})
+      if (auth.default.getUserId()) {
+        const userId = auth.default.getUserId()
+    axios.get(`/users/${userId}`,{
+        headers: {
+        "Authorization": `${auth.default.getToken()}`,
+        "userId": `${auth.default.getUserId()}`
+        }
         })
-        .catch(error => {
-            console.log(error)
-        })
-    } 
+    .then(res => {
+        let payload = res.data.payload[0]
+        this.setState({fName: payload.firstname, lName: payload.lastname, phoneNo: payload.phone, email: payload.email})
+    })
+    .catch(error => {
+      if(error.response.status === 401){
+        window.location.reload();
+      }
+        console.log(error)
+    })
+  }
 }
 
     onChange(e) {
@@ -48,8 +53,7 @@ export default class accountInformation extends Component {
     }
     onSubmit(e) {
         e.preventDefault()
-        const token = localStorage.userToken
-        const decode = jwt_decode(token)
+        const userId = auth.default.getUserId()
         const data = {
             firstname: this.state.fName,
             lastname: this.state.lName
@@ -57,17 +61,21 @@ export default class accountInformation extends Component {
         if(data.firstname === '' || data.lastname === '') {
             this.setState({msg: {message: 'Fields can not be empty', show: true}})
         } else {
-            axios.put(`/users/${decode.userId}`,data,{
-                headers: {
-                "Authorization": `Bearer ${localStorage.userToken}`
-                }
-                })
+            axios.put(`/users/${userId}`,data,{
+              headers: {
+            "Authorization": `${auth.default.getToken()}`,
+            "userId": `${auth.default.getUserId()}`
+          }
+            })
             .then(res => {
                 console.log('update successfully', res)
                 this.setState({msg: {message: '', show: false}})
                 this.setState({displayAlert: true, messageDisplay:true})
             })
             .catch(error => {
+              if(error.response.status === 401){
+                window.location.reload();
+              }
                 console.log(error)
                 this.setState({displayAlert: true, messageDisplay:false})
             })
@@ -80,47 +88,49 @@ export default class accountInformation extends Component {
                     <form onSubmit={this.onSubmit}>
                         <h3>Account Information</h3>
                         <div className="form-group">
-                            <input 
-                                type="fName" 
+                            <input
+                                type="fName"
                                 name="fName"
-                                className="form-control" 
+                                className="form-control"
                                 placeholder="fName"
                                 value={this.state.fName}
                                 onChange={this.onChange} />
-                                
+
                         </div>
                         <div className="form-group">
-                            <input 
-                                type="lName" 
+                            <input
+                                type="lName"
                                 name="lName"
-                                className="form-control" 
+                                className="form-control"
                                 placeholder="lName"
                                 value={this.state.lName}
                                 onChange={this.onChange} />
                         </div>
                         <div className="form-group">
-                            <input 
-                                type="email" 
+                            <input
+                                type="email"
                                 name="email"
-                                className="form-control" 
+                                className="form-control"
                                 placeholder="email"
                                 value={this.state.email}
                                 disabled = {true}
                                  />
                         </div>
-                        <div className="form-group">
-                            <input 
-                                type="phoneNo"
-                                name="phoneNo" 
-                                className="form-control" 
-                                placeholder="PhoneNo"
-                                value={this.state.phoneNo}
-                                disabled = {true}
-                                 />
-                        </div>
+                        {this.state.phoneNo &&
+                          <div className="form-group">
+                              <input
+                                  type="phoneNo"
+                                  name="phoneNo"
+                                  className="form-control"
+                                  placeholder="PhoneNo"
+                                  value={this.state.phoneNo}
+                                  disabled = {true}
+                                   />
+                          </div>
+                        }
                         <br></br>
                         <button style = {{marginLeft: '68px'}} type="submit" className="btn btn-primary">Edit</button>
-                        <button  style = {{marginLeft: '35px'}} className="btn btn-secondary" onClick={() => {this.props.history.push('/home')}}>Back</button>
+                          <a  style = {{marginLeft: '35px'}} className="btn btn-secondary" href='/home'>Back</a>
                          <br></br>
                          <br></br>
                          {this.state.msg.show &&
