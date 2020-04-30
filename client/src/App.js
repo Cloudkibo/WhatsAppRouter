@@ -10,7 +10,7 @@ import {
 } from "react-router-dom";
 
 import Login from "./components/login";
-// import SignUp from "./components/register";
+import SignUp from "./components/register";
 
 import Home from './components/home';
 import AccountInformation from './components/accountInformation';
@@ -51,6 +51,13 @@ ifLoggedIn(nextState, replace) {
                 <Redirect to="/home"/>
               ) : (
                 <Login />
+              )
+            )} />
+            <Route exact path="/signup" render={() => (
+              auth.loggedIn() ? (
+                <Redirect to="/home"/>
+              ) : (
+                <SignUp />
               )
             )} />
             <Route exact path="/home"

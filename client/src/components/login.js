@@ -48,10 +48,12 @@ export default class Login extends Component {
                             <h3>Sign In</h3>
                             {
                               this.state.url &&
-                              <a href={this.state.url} style={btn} className="google btn"><i className="fa fa-google fa-fw">
+                              <a style={{marginTop: '20px'}} href={this.state.url} style={btn} className="google btn"><i className="fa fa-google fa-fw">
                                 </i> Login with Google
                               </a>
                             }
+                            <p style={{marginLeft: '110px'}}>New Here? <a href='/signup'>Signup</a></p>
+
                     </div>
                 </div>
             </div>
