@@ -31,9 +31,10 @@ export default class Home extends Component {
             confirmEmail: '',
             wrongEmail: false,
             alternetUrlChangeIndex: 0,
-            changeInEdit: {
-                isBaseURLChanged: false,
-                alternetChangeIndex: []
+            toBeEdit: {},
+            tobeEditIndex: {
+              baseGroupUrlChanged: false,
+              alternetUrlChange: []
             }
         }
         this.getUser = this.getUser.bind(this);
@@ -56,10 +57,14 @@ export default class Home extends Component {
         this.copyUrl = this.copyUrl.bind(this)
         this.disable = this.disable.bind(this)
         this.toBeAlternetDelete = this.toBeAlternetDelete.bind(this)
-        this.checkWhatspUrl = this.checkWhatspUrl.bind(this)
         this.confirmEmail = this.confirmEmail.bind(this)
         this.getGroupID = this.getGroupID.bind(this)
         this.search = this.search.bind(this)
+        this.isUniqueURL = this.isUniqueURL.bind(this)
+        this.validateCount = this.validateCount.bind(this)
+        this.validateName = this.validateName.bind(this)
+        this.validateUrl = this.validateUrl.bind(this)
+        this.validateAlternateGroups = this.validateAlternateGroups.bind(this)
     }
 
     search(event) {
@@ -106,11 +111,7 @@ export default class Home extends Component {
                         count: 0,
                         alternetUrl: []
                     },
-                    editAlert: true,
-                    changeInEdit: {
-                        isBaseURLChanged: false,
-                        alternetChangeIndex: []
-                    }
+                    editAlert: true
                 })
                 document.getElementById('edit').click()
                 setTimeout(() => { this.getUrl() }, 500)
@@ -123,6 +124,14 @@ export default class Home extends Component {
     }
 
     toBeEdit(url) {
+      this.setState({
+        msg: {
+            message: '',
+            show: false
+        },
+        alternetUrlChangeIndex: 0,
+        toBeEdit: {}
+      })
         axios
             .get(`/urls/${url.id}`, {
               headers: {
@@ -150,11 +159,8 @@ export default class Home extends Component {
                     }
                 })
                 this.setState({
-                    addUrls: data, msg: {
-                        message: '',
-                        show: false
-                    },
-                    alternetUrlChangeIndex: 0
+                    addUrls: data,
+                    toBeEdit: JSON.parse(JSON.stringify(data))
                 })
             })
             .catch(err => {
@@ -205,7 +211,6 @@ export default class Home extends Component {
                 this.setState({ wrongEmail: false, confirmEmail: '' })
             } else {
                 this.setState({ wrongEmail: true })
-
             }
         } else {
             let temp = this.state.addUrls
@@ -220,7 +225,14 @@ export default class Home extends Component {
 
 
     toBeAlternetDelete(index) {
+      if(this.state.addUrls.alternetUrl[index].url === '') {
+        let temp = this.state.addUrls
+        temp.alternetUrl.splice(index, 1)
+        this.setState({ addUrls: temp })
+       } else {
+        console.log('i am here')
         this.setState({ toBeAlternetDelete: index, wrongEmail: false, confirmEmail: '' })
+      }
     }
 
     alternetCountChange(index, event) {
@@ -232,17 +244,11 @@ export default class Home extends Component {
     alternetUrlChange(index, event) {
         let temp = this.state.addUrls
         temp.alternetUrl[index].url = event.target.value
-        let array = this.state.changeInEdit
-        let already = false
-        array.alternetChangeIndex.forEach(element => {
-            if (element === index) {
-                already = true
-            }
-        })
-        if (!already) {
-            array.alternetChangeIndex.push(index)
+        let data = this.state.tobeEditIndex
+        if(data.alternetUrlChange.indexOf(index) === -1){
+          data.alternetUrlChange.push(index)
         }
-        this.setState({ addUrls: temp, alternetUrlChangeIndex: index, changeIndex: array })
+        this.setState({ addUrls: temp, alternetUrlChangeIndex: index, tobeEditIndex: data})
     }
 
     alternetNameChange(index, event) {
@@ -273,11 +279,7 @@ export default class Home extends Component {
                         message: '',
                         show: false
                     },
-                    createAlert: true,
-                    changeInEdit: {
-                        isBaseURLChanged: false,
-                        alternetChangeIndex: []
-                    }
+                    createAlert: true
                 })
                 document.getElementById('addUrl').click()
                 this.getUrl()
@@ -306,6 +308,7 @@ export default class Home extends Component {
                 count: 0,
                 alternetUrl: []
             },
+            toBeEdit: {},
             msg: {
                 message: '',
                 show: false
@@ -317,9 +320,10 @@ export default class Home extends Component {
     changeBaseUrl(event) {
         let temp = this.state.addUrls
         temp.baseUrl = event.target.value
-        let change = this.state.changeInEdit
-        change.isBaseURLChanged = true
-        this.setState({ addUrls: temp, changeInEdit: change })
+
+        let data = this.state.tobeEditIndex
+        data.baseGroupUrlChanged = true
+        this.setState({ addUrls: temp, tobeEditIndex: data})
     }
     changeBaseName(event) {
         let temp = this.state.addUrls
@@ -333,43 +337,139 @@ export default class Home extends Component {
         this.setState({ addUrls: temp })
     }
 
-    disable(type) {
-        console.log(this.state.allUrls)
-        let temp = false
-        let message = ''
-        this.state.allUrls.forEach(element => {
-            if (type === 'addurl') {
-                if (this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) !==  this.getGroupID(element.url)) {
-                    this.state.addUrls.alternetUrl.forEach((alternet, i) => {
-                        if (this.getGroupID(alternet.url.replace(/\s/g, '')) === this.getGroupID(element.url)) {
-                            temp = true
-                            message = alternet.name + ' Group invitation URL already exists in database'
-                        }
-                    })
-                } else {
-                    temp = true
-                    message = this.state.addUrls.name + ' Group invitation URL already exists in database'
+    isUniqueURL(type) {
+      let data = {
+        temp: false,
+        message: ''
+      }
+      this.state.allUrls.forEach(element => {
+          if (type === 'addurl') {
+              if (this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) !==  this.getGroupID(element.url)) {
+                  this.state.addUrls.alternetUrl.forEach((alternet, i) => {
+                      if (this.getGroupID(alternet.url.replace(/\s/g, '')) === this.getGroupID(element.url)) {
+                          data.temp = true
+                          data.message= alternet.name + ' Alternate Group invitation URL already exists in database'
+                      }
+                  })
+              } else {
+                  data.temp= true
+                  data.message= this.state.addUrls.name + ' Base Group invitation URL already exists in database'
+              }
+          } else {
+              if(this.state.tobeEditIndex.baseGroupUrlChanged) {
+                if ((this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) !== this.getGroupID(this.state.toBeEdit.baseUrl.replace(/\s/g, '')))) {
+                  if((this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) ===  this.getGroupID(element.url))) {
+                    data.temp= true
+                    data.message= this.state.addUrls.name + ' Base Group invitation URL already exists in database'
+                  }
                 }
-            }
-            else {
-                if (this.state.changeInEdit.isBaseURLChanged) {
-                    if (this.getGroupID(this.state.addUrls.baseUrl.replace(/\s/g, '')) !== this.getGroupID(element.url)) {
-                    } else {
-                        temp = true
-                        message = this.state.addUrls.name + ' Group invitation URL already exists in database'
+              } else {
+                if (this.state.tobeEditIndex.alternetUrlChange.length > 0) {
+                  this.state.tobeEditIndex.alternetUrlChange.forEach(index => {
+                  if(this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) !== this.getGroupID(this.state.toBeEdit.alternetUrl[index].url.replace(/\s/g, ''))) {
+                    if((this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) ===  this.getGroupID(element.url))) {
+                      data.temp = true
+                      data.message= this.state.addUrls.alternetUrl[index].name + ' Alternate Group invitation URL already exists in database'
                     }
-                } else {
-                    if (this.state.changeInEdit.alternetChangeIndex.length > 0) {
-                        this.state.changeInEdit.alternetChangeIndex.forEach(index => {
-                            if (this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) === this.getGroupID(element.url)) {
-                                temp = true
-                                message = this.state.addUrls.alternetUrl[index].name + ' Group invitation URL already exists in database'
-                            }
-                        })
-                    }
+                  }
+                });
                 }
+              }
+          }
+      })
+      return data
+    }
+
+    getGroupID(url) {
+     let split = url.split('/')
+     let groupId = split[split.length - 1]
+     if(groupId === '') {
+         groupId = split[split.length -2]
+     }
+     return groupId
+ }
+
+    validateCount (count) {
+      let data = {
+        show: false,
+        message: ''
+      }
+      let number =  parseInt(count, 10)
+      if(!(number >=0 && number <=250)) {
+        data.show = true
+        data.message = 'count should be between 0-250'
+      }
+      return data
+    }
+
+
+ validateUrl (url) {
+   let data = {
+     show: false,
+     message: ''
+   }
+   if(url === '') {
+     data.show = true
+     data.message = 'URL is required and can not be empty'
+   } else {
+     if(url.includes('invite')) {
+       let valid = url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/invite?\/([a-zA-Z0-9_\-]{22}$)+(\/)?$/)
+       if(!valid) {
+         data.show = true
+         data.message = 'invalid URL'
+       }
+     } else {
+       let valid = url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/([a-zA-Z0-9_\-]{22}$)+(\/)?$/)
+       if(!valid) {
+         data.show = true
+         data.message = 'invalid URL'
+       }
+     }
+   }
+   return data
+ }
+
+    validateName(name) {
+      let data = {
+        show: false,
+        message: ''
+      }
+      if(name === '') {
+        data.show = true
+        data.message = 'name is required and can not be empty'
+      }
+      return data
+    }
+
+    validateAlternateGroups(groups) {
+
+      let data = {
+        message: '',
+        show: false
+      }
+        groups.forEach((url, i) => {
+          let validURL = this.validateUrl(url.url)
+          let validName = this.validateName(url.name)
+          let validCount = this.validateCount(url.count)
+          if(validURL.show) data = {message: `${validURL.message} of Alternet Group (${url.name})`, show: validURL.show}
+          else if(validName.show) data = {message: `Alternet Group ${validName.message}`, show: validName.show}
+          else if(validCount.show) data = {message: `Alternet Group (${url.name}) ${validCount.message}`, show: validCount.show}
+          else if (url.url === this.state.addUrls.baseUrl ||
+            (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
+              data = {message: 'URL is not unique', show: true}
             }
         })
+        return data
+    }
+
+
+    disable(type) {
+        let temp = false
+        let message = ''
+        let data = this.isUniqueURL(type)
+        console.log(data)
+        temp = data.temp
+        message = data.message
         if (temp) {
             this.setState({
                 msg: {
@@ -378,36 +478,18 @@ export default class Home extends Component {
                 }
             })
         } else {
-            let baseCount = parseInt(this.state.addUrls.count, 10)
-            if (this.state.addUrls.baseUrl !== ''
-                && (this.state.addUrls.name !== '')
-                && (baseCount >= 0)
-                && (baseCount <= 250)
-                && this.checkWhatspUrl(this.state.addUrls.baseUrl)
+            let validBaseCount = this.validateCount(this.state.addUrls.count)
+            let validBaseURL = this.validateUrl(this.state.addUrls.baseUrl)
+            let validBaseName = this.validateName(this.state.addUrls.name)
+            if (!validBaseURL.show
+                && !validBaseName.show
+                && !validBaseCount.show
             ) {
                 if (this.state.addUrls.alternetUrl.length > 0) {
-                    let temp = false
-                    let message = ''
-                    this.state.addUrls.alternetUrl.forEach((url, i) => {
-                        if (
-                            (url.url === '') ||
-                            (url.name === '') ||
-                            (url.count < 0 || url.count > 250) ||
-                            !this.checkWhatspUrl(url.url)) {
-                            temp = true
-                            message = 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.'
-                        } else if (url.url === this.state.addUrls.baseUrl ||
-                            (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
-                            temp = true
-                            message = 'URL is not unique'
-                        }
-                    })
-                    if (temp) {
+                    let data = this.validateAlternateGroups(this.state.addUrls.alternetUrl)
+                    if (data.show) {
                         this.setState({
-                            msg: {
-                                message: message,
-                                show: temp
-                            }
+                            msg: data
                         })
                     } else {
                         if (type === 'addurl') this.addUrl()
@@ -430,34 +512,19 @@ export default class Home extends Component {
                     })
                 }
             } else {
+              let data = {
+                message: '',
+                show: false
+              }
+              console.log(validBaseURL)
+              if(validBaseURL.show) data = {message: `Base Group ${validBaseURL.message}`, show: true}
+              else if(validBaseName.show) data = {message: `Base Group ${validBaseName.message}`, show: true}
+              else if(validBaseCount.show) data = {message: `Base Group ${validBaseCount.message}`, show: true}
                 this.setState({
-                    msg: {
-                        message: 'Either you entered a wrong url or Name or the count can not be more than 250 or less than 0.',
-                        show: true
-                    }
+                    msg: data
                 })
             }
         }
-    }
-
-       getGroupID(url) {
-        let split = url.split('/')
-        let groupId = split[split.length - 1]
-        if(groupId === '') {
-            groupId = split[split.length -2]
-        }
-        return groupId
-    }
-
-
-    checkWhatspUrl (url) {
-      if(url.includes('invite'))
-      {
-        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/invite?\/([a-zA-Z0-9_\-]{22}$)+(\/)?$/)
-      }
-      else {
-        return url.match(/https?\:\/\/(www\.)?chat(\.)?whatsapp(\.com)?\/([a-zA-Z0-9_\-]{22}$)+(\/)?$/)
-      }
     }
 
     componentDidMount() {
@@ -812,7 +879,7 @@ export default class Home extends Component {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Ignore</button>
                                 <button type="button" className="btn btn-primary" onClick={() => this.disable('addurl')}>Add URL</button>
                             </div>
                         </div>
@@ -948,7 +1015,7 @@ export default class Home extends Component {
                                                         <div className='col-sm-2'>
                                                             <button type="button" className="btn btn-danger" style={{ height: '37px' }}
                                                                 data-toggle="modal"
-                                                                data-target="#alternetDelete"
+                                                                data-target={this.state.addUrls.alternetUrl[i].url !== '' ? "#alternetDelete" : ""}
                                                                 onClick={() => this.toBeAlternetDelete(i)}>
                                                                 <span className="material-icons">
                                                                     delete_forever
@@ -967,7 +1034,7 @@ export default class Home extends Component {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Ignore</button>
                                 <button type="button" className="btn btn-primary" onClick={() => this.disable('editurl')}>Save changes</button>
                             </div>
                         </div>
