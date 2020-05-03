@@ -130,7 +130,13 @@ export default class Home extends Component {
             show: false
         },
         alternetUrlChangeIndex: 0,
-        toBeEdit: {}
+        toBeEdit: {},
+         addUrls: {
+            name: "",
+            baseUrl: "",
+            count: 0,
+            alternetUrl: []
+        }
       })
         axios
             .get(`/urls/${url.id}`, {
