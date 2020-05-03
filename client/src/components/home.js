@@ -208,14 +208,23 @@ export default class Home extends Component {
                 temp.alternetUrl.splice(this.state.toBeAlternetDelete, 1)
                 this.setState({ addUrls: temp })
                 document.getElementById('alternetDelete').click()
-                this.setState({ wrongEmail: false, confirmEmail: '' })
+                this.setState({ wrongEmail: false, confirmEmail: '',   msg: {
+                      message: '',
+                      show: false
+                  }})
             } else {
-                this.setState({ wrongEmail: true })
+                this.setState({ wrongEmail: true, msg: {
+                      message: '',
+                      show: false
+                  }})
             }
         } else {
             let temp = this.state.addUrls
             temp.alternetUrl.splice(index, 1)
-            this.setState({ addUrls: temp })
+            this.setState({ addUrls: temp,   msg: {
+                  message: '',
+                  show: false
+              }})
         }
     }
 
@@ -228,10 +237,16 @@ export default class Home extends Component {
       if(this.state.addUrls.alternetUrl[index].url === '') {
         let temp = this.state.addUrls
         temp.alternetUrl.splice(index, 1)
-        this.setState({ addUrls: temp })
+        this.setState({ addUrls: temp, msg: {
+              message: '',
+              show: false
+          } })
        } else {
         console.log('i am here')
-        this.setState({ toBeAlternetDelete: index, wrongEmail: false, confirmEmail: '' })
+        this.setState({ toBeAlternetDelete: index, wrongEmail: false, confirmEmail: '',msg: {
+              message: '',
+              show: false
+          } })
       }
     }
 
@@ -451,9 +466,9 @@ export default class Home extends Component {
           let validURL = this.validateUrl(url.url)
           let validName = this.validateName(url.name)
           let validCount = this.validateCount(url.count)
-          if(validURL.show) data = {message: `${validURL.message} of Alternet Group (${url.name})`, show: validURL.show}
+          if(validURL.show) data = {message: `${validURL.message} of Alternet Group ${url.name}`, show: validURL.show}
           else if(validName.show) data = {message: `Alternet Group ${validName.message}`, show: validName.show}
-          else if(validCount.show) data = {message: `Alternet Group (${url.name}) ${validCount.message}`, show: validCount.show}
+          else if(validCount.show) data = {message: `Alternet Group ${url.name} ${validCount.message}`, show: validCount.show}
           else if (url.url === this.state.addUrls.baseUrl ||
             (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
               data = {message: 'URL is not unique', show: true}
