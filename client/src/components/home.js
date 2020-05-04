@@ -664,33 +664,40 @@ export default class Home extends Component {
                             </div>
                         </div>
                     </div>
-                    <div style={{ width: '90%' }} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.deleteAlert &&
-                            <div className="alert alert-success" role="alert">
+                            <div className="alert alert-success" style={{ width: '90%', margin: '30px 0px 0px 5%' }} role="alert">
                                 Deleted URL Successfully!
                         </div>
                         }
                     </div>
-                    <div style={{ width: '90%' }} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.copied &&
-                            <div className="alert alert-primary" role="alert">
+                            <div className="alert alert-primary" style={{ width: '90%', margin: '30px 0px 0px 5%' }} role="alert">
                                 Redirect Link Copied!
                         </div>
                         }
                     </div>
-                    <div style={{ width: '90%' }} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.editAlert &&
-                            <div className="alert alert-success" role="alert">
+                            <div className="alert alert-success" style={{ width: '90%', margin: '30px 0px 0px 5%' }} role="alert">
                                 URL Edited Successfully!
                         </div>
                         }
                     </div>
-                    <div style={{ width: '90%' }} className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div sclassName='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.createAlert &&
-                            <div className="alert alert-success" role="alert">
+                            <div className="alert alert-success" role="alert" style={{ width: '90%', margin: '30px 0px 0px 5%' }}>
                                 URL Created Successfully!
                         </div>
                         }
+                    </div>
+                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4%' }}>
+                      <div class="card" style={{ width: '90%', margin: '30px 0px 0px 5%' }}>
+                        <div class="card-header">
+                          Need help in understanding WLB? Here is the <a href='https://kibopush.com/wlb/' target='__blank'>documentation</a>.
+                        </div>
+                      </div>
                     </div>
                     <div className='col-sm-12'>
                         <div className='row' style={{ width: '100%', margin: '0px 0px 0px 4%' }}>
