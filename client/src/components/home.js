@@ -473,8 +473,8 @@ export default class Home extends Component {
           let validName = this.validateName(url.name)
           let validCount = this.validateCount(url.count)
           if(validURL.show) data = {message: `${validURL.message} of Alternet Group ${url.name}`, show: validURL.show}
-          else if(validName.show) data = {message: `Alternet Group ${validName.message}`, show: validName.show}
-          else if(validCount.show) data = {message: `Alternet Group ${url.name} ${validCount.message}`, show: validCount.show}
+          else if(validName.show) data = {message: `Alternate Group ${validName.message}`, show: validName.show}
+          else if(validCount.show) data = {message: `Alternate Group ${url.name} ${validCount.message}`, show: validCount.show}
           else if (url.url === this.state.addUrls.baseUrl ||
             (this.state.addUrls.alternetUrl[this.state.alternetUrlChangeIndex].url === url.url && this.state.alternetUrlChangeIndex !== i)) {
               data = {message: 'URL is not unique', show: true}
@@ -832,7 +832,7 @@ export default class Home extends Component {
                                     </div>
                                     <div className='col-sm-4'>
                                         <div className="form-group">
-                                            <label>Participent Count</label>
+                                            <label>Participant Count</label>
                                             <input
                                                 type="number"
                                                 name="count"
@@ -985,7 +985,7 @@ export default class Home extends Component {
                                     </div>
                                     <div className='col-sm-4'>
                                         <div className="form-group">
-                                            <label>Participent Count</label>
+                                            <label>Participant Count</label>
                                             <input
                                                 type="number"
                                                 name="count"
