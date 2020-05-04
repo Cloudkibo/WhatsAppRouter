@@ -248,7 +248,6 @@ export default class Home extends Component {
               show: false
           } })
        } else {
-        console.log('i am here')
         this.setState({ toBeAlternetDelete: index, wrongEmail: false, confirmEmail: '',msg: {
               message: '',
               show: false
@@ -474,7 +473,7 @@ export default class Home extends Component {
           let validURL = this.validateUrl(url.url)
           let validName = this.validateName(url.name)
           let validCount = this.validateCount(url.count)
-          if(validURL.show) data = {message: `${validURL.message} of Alternet Group ${url.name}`, show: validURL.show}
+          if(validURL.show) data = {message: `${validURL.message} of Alternate Group ${url.name}`, show: validURL.show}
           else if(validName.show) data = {message: `Alternate Group ${validName.message}`, show: validName.show}
           else if(validCount.show) data = {message: `Alternate Group ${url.name} ${validCount.message}`, show: validCount.show}
           else if (url.url === this.state.addUrls.baseUrl ||
@@ -1028,7 +1027,7 @@ export default class Home extends Component {
                                                                     className="form-control"
                                                                     value={item.name}
                                                                     onChange={(e) => this.alternetNameChange(i, e)}
-                                                                    placeholder="Enter Alterner Group Name" />
+                                                                    placeholder="Enter Alternate Group Name" />
                                                             </div>
                                                         </div>
                                                         <div className='col-sm-4'>
