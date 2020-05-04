@@ -385,14 +385,16 @@ export default class Home extends Component {
                   }
                 }
               } else {
-                if (this.state.tobeEditIndex.alternetUrlChange.length > 0) {
+                if (this.state.tobeEditIndex.alternetUrlChange.length > 0 && this.state.toBeEdit.alternetUrl.length > 0 ) {
                   this.state.tobeEditIndex.alternetUrlChange.forEach(index => {
-                  if(this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) !== this.getGroupID(this.state.toBeEdit.alternetUrl[index].url.replace(/\s/g, ''))) {
-                    if((this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) ===  this.getGroupID(element.url))) {
-                      data.temp = true
-                      data.message= this.state.addUrls.alternetUrl[index].name + ' Alternate Group invitation URL already exists in database'
+                    if(this.state.toBeEdit.alternetUrl[index].url) {
+                      if(this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) !== this.getGroupID(this.state.toBeEdit.alternetUrl[index].url.replace(/\s/g, ''))) {
+                        if((this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) ===  this.getGroupID(element.url))) {
+                          data.temp = true
+                          data.message= this.state.addUrls.alternetUrl[index].name + ' Alternate Group invitation URL already exists in database'
+                        }
+                      }
                     }
-                  }
                 });
                 }
               }
