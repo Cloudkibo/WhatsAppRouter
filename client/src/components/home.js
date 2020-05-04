@@ -628,7 +628,6 @@ export default class Home extends Component {
                     let count = alternetUrls.length
                     element.alternetGroups = count
                 });
-                this.setState({ baseUrls: baseUrls,dataForSearch: baseUrls, copied: false })
             })
             .catch(err => {
               if(err.response.status === 401){
