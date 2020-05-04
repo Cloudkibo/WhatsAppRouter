@@ -713,7 +713,7 @@ export default class Home extends Component {
                                 <tr className="table-active">
                                     <th scope="col">Group Name</th>
                                     <th scope="col">Base URL</th>
-                                    <th scope="col">Alternet Groups</th>
+                                    <th scope="col">Alternate Groups</th>
                                     <th scope="col">Redirect Link</th>
                                     <th scope="col">Actions</th>
                                 </tr>
@@ -843,7 +843,7 @@ export default class Home extends Component {
                                         </div>
                                     </div>
                                     <div className='col-sm-12'>
-                                        <label>Alternet Groups</label>
+                                        <label>Alternate Groups</label>
                                     </div>
                                     {
                                         this.state.addUrls.alternetUrl.map((item, i) =>
@@ -857,7 +857,7 @@ export default class Home extends Component {
                                                                     className="form-control"
                                                                     value={item.url}
                                                                     onChange={(e) => this.alternetUrlChange(i, e)}
-                                                                    placeholder="Enter Alterner Group URL" />
+                                                                    placeholder="Enter Alternate Group URL" />
                                                             </div>
                                                         </div>
                                                         <div className='col-sm-6'>
@@ -996,7 +996,7 @@ export default class Home extends Component {
                                         </div>
                                     </div>
                                     <div className='col-sm-12'>
-                                        <label>Alternet Groups</label>
+                                        <label>Alternate Groups</label>
                                     </div>
                                     {
                                         this.state.addUrls.alternetUrl.map((item, i) =>
@@ -1010,7 +1010,7 @@ export default class Home extends Component {
                                                                     className="form-control"
                                                                     value={item.url}
                                                                     onChange={(e) => this.alternetUrlChange(i, e)}
-                                                                    placeholder="Enter Alterner Group URL" />
+                                                                    placeholder="Enter Alternate Group URL" />
                                                             </div>
                                                         </div>
                                                         <div className='col-sm-6'>
