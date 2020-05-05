@@ -684,7 +684,7 @@ export default class Home extends Component {
                         </div>
                         }
                     </div>
-                    <div sclassName='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                         {this.state.createAlert &&
                             <div className="alert alert-success" style={{ width: '90%', margin: '30px 0px 0px 5%' }}  role="alert" >
                                 URL Created Successfully!
