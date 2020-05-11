@@ -70,14 +70,22 @@ export default class AccountInformation extends Component {
             .then(res => {
                 console.log('update successfully', res)
                 this.setState({msg: {message: '', show: false}})
-                this.setState({displayAlert: true, messageDisplay:true})
+                this.setState({displayAlert: true, messageDisplay:true}, ()=> {
+                  setTimeout(() => {
+                    this.setState({ displayAlert: false })
+                  }, 3000);
+                })
             })
             .catch(error => {
               if(error.response.status === 401){
                 window.location.reload();
               }
                 console.log(error)
-                this.setState({displayAlert: true, messageDisplay:false})
+                this.setState({displayAlert: true, messageDisplay:false}, ()=> {
+                  setTimeout(() => {
+                    this.setState({ displayAlert: false })
+                  }, 3000);
+                })
             })
         }
     }
