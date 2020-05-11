@@ -91,7 +91,11 @@ export default class Home extends Component {
         para.select()
         document.execCommand("copy");
         document.body.removeChild(para);
-        this.setState({ copied: true })
+        this.setState({ copied: true }, ()=> {
+          setTimeout(() => {
+            this.setState({ copied: false })
+          }, 3000);
+        })
     }
 
     editURL() {
@@ -112,6 +116,10 @@ export default class Home extends Component {
                         alternetUrl: []
                     },
                     editAlert: true
+                }, ()=> {
+                  setTimeout(() => {
+                    this.setState({ editAlert: false })
+                  }, 3000);
                 })
                 document.getElementById('edit').click()
                 setTimeout(() => { this.getUrl() }, 500)
@@ -189,7 +197,11 @@ export default class Home extends Component {
                 })
                 .then(res => {
                     this.getUrl()
-                    this.setState({ toBeDelete: {}, deleteAlert: true, editAlert: false, createAlert: false, wrongEmail: false, confirmEmail: '' })
+                    this.setState({ toBeDelete: {}, deleteAlert: true, editAlert: false, createAlert: false, wrongEmail: false, confirmEmail: '' }, ()=> {
+                      setTimeout(() => {
+                        this.setState({ deleteAlert: false })
+                      }, 3000);
+                    })
                     document.getElementById('delete').click()
                 })
                 .catch(err => {
@@ -300,6 +312,10 @@ export default class Home extends Component {
                         show: false
                     },
                     createAlert: true
+                }, ()=> {
+                  setTimeout(() => {
+                    this.setState({ createAlert: false })
+                  }, 3000);
                 })
                 document.getElementById('addUrl').click()
                 this.getUrl()
@@ -627,7 +643,6 @@ export default class Home extends Component {
                     let count = alternetUrls.length
                     element.alternetGroups = count
                 });
-                this.setState({ baseUrls: baseUrls, dataForSearch: baseUrls, copied: false })
             })
             .catch(err => {
               if(err.response.status === 401){
