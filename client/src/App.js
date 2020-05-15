@@ -1,92 +1,29 @@
 import React, { Component } from 'react';
-import './App.css';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-  useHistory,
-  useLocation
-} from "react-router-dom";
+import PropTypes from 'prop-types'
+import Header from './components/header/header'
+import Sidebar from './components/sidebar/sidebar'
 
-import Login from "./components/login";
-import SignUp from "./components/register";
-
-import Home from './components/home';
-import AccountInformation from './components/accountInformation';
-import auth from './utility/auth.service.js'
 class App extends Component {
   constructor() {
-    super();
-    this.state = {
-    }
-    this.requireAuth = this.requireAuth.bind(this)
-    this.ifLoggedIn = this.ifLoggedIn.bind(this)
+    super()
+    this.state = {}
   }
-
-requireAuth (nextState, replace) {
-  if (!auth.loggedIn()) {
-    replace({
-      pathname: '/login',
-      state: { nextPathname: nextState.location.pathname }
-    })
-  }
-}
-
-ifLoggedIn(nextState, replace) {
-  if (auth.loggedIn()) {
-    replace({
-      pathname: '/home',
-      state: { nextPathname: nextState.location.pathname }
-    })
-  }
-}
 
   render() {
     return (
-      <Router>
-          <Switch>
-            <Route exact path="/login" render={() => (
-              auth.loggedIn() ? (
-                <Redirect to="/home"/>
-              ) : (
-                <Login />
-              )
-            )} />
-            <Route exact path="/signup" render={() => (
-              auth.loggedIn() ? (
-                <Redirect to="/home"/>
-              ) : (
-                <SignUp />
-              )
-            )} />
-            <Route exact path="/home"
-            render={() => (
-              !auth.loggedIn() ? (
-                <Redirect to="/login"/>
-              ) : (
-                <Home />
-              )
-            )}/>
-            <Route exact path="/accountInformation" render={() => (
-              !auth.loggedIn() ? (
-                <Redirect to="/login"/>
-              ) : (
-                <AccountInformation />
-              )
-            )} />
-            <Route path='/' render={() => (
-              auth.loggedIn() ? (
-                <Redirect to="/home"/>
-              ) : (
-                <Login />
-              )
-            )}/>
-
-          </Switch>
-      </Router>
+      <div>
+        <Header history={this.props.history} location={this.props.location} />
+        <div className='m-grid__item m-grid__item--fluid m-grid m-grid--ver-desktop m-grid--desktop m-body'>
+          <Sidebar history={this.props.history} location={this.props.location} />
+          { this.props.children }
+        </div>
+      </div>
     );
   }
 }
 
-export default App;
+App.propTypes = {
+  children: PropTypes.object.isRequired
+}
+
+export default App
