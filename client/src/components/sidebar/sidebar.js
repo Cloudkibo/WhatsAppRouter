@@ -18,79 +18,79 @@ class Sidebar extends Component {
     )
   }
 
-  showDashboard () {
-    return (
-      <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
-        <Link to='/' className='m-menu__link m-menu__toggle'>
-          <i className='m-menu__link-icon flaticon-squares-4' title='Dashboard' />
-          <span className='m-menu__link-text'>Dashboard</span>
-        </Link>
-      </li>
-    )
-  }
+  // showDashboard () {
+  //   return (
+  //     <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
+  //       <Link to='/' className='m-menu__link m-menu__toggle'>
+  //         <i className='m-menu__link-icon flaticon-squares-4' title='Dashboard' />
+  //         <span className='m-menu__link-text'>Dashboard</span>
+  //       </Link>
+  //     </li>
+  //   )
+  // }
 
 
-  showNestedMenu () {
-    return (
-      <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
-        <a href='#/' className='m-menu__link m-menu__toggle'>
-          <i className='m-menu__link-icon flaticon-users' title='Subscriptions' />
-          <span className='m-menu__link-text'>Main Item</span>
-          <i className='m-menu__ver-arrow la la-angle-right' />
-        </a>
-        <div className='m-menu__submenu'>
-          <span className='m-menu__arrow' />
-          <ul className='m-menu__subnav'>
-            <li className='m-menu__item  m-menu__item--parent' aria-haspopup='true' >
-              <a href='#/' className='m-menu__link'>
-                <span className='m-menu__link-text'>
-                  Main Item
-                </span>
-              </a>
-            </li>
-            <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
-              <Link to='/' className='m-menu__link m-menu__toggle'>
-                <i className='m-menu__link-icon flaticon-user-ok' title='Subscribers' />
-                <span className='m-menu__link-text'>Nested Item 1</span>
-              </Link>
-            </li>
-            <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
-              <Link to='/' className='m-menu__link m-menu__toggle'>
-                <i className='m-menu__link-icon flaticon-user-ok' title='Subscribers' />
-                <span className='m-menu__link-text'>Nested Item 2</span>
-              </Link>
-            </li>
-            <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
-              <Link to='/' className='m-menu__link m-menu__toggle'>
-                <i className='m-menu__link-icon flaticon-user-ok' title='Subscribers' />
-                <span className='m-menu__link-text'>Nested Item 3</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </li>
-    )
-  }
+  // showNestedMenu () {
+  //   return (
+  //     <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
+  //       <a href='#/' className='m-menu__link m-menu__toggle'>
+  //         <i className='m-menu__link-icon flaticon-users' title='Subscriptions' />
+  //         <span className='m-menu__link-text'>Main Item</span>
+  //         <i className='m-menu__ver-arrow la la-angle-right' />
+  //       </a>
+  //       <div className='m-menu__submenu'>
+  //         <span className='m-menu__arrow' />
+  //         <ul className='m-menu__subnav'>
+  //           <li className='m-menu__item  m-menu__item--parent' aria-haspopup='true' >
+  //             <a href='#/' className='m-menu__link'>
+  //               <span className='m-menu__link-text'>
+  //                 Main Item
+  //               </span>
+  //             </a>
+  //           </li>
+  //           <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
+  //             <Link to='/' className='m-menu__link m-menu__toggle'>
+  //               <i className='m-menu__link-icon flaticon-user-ok' title='Subscribers' />
+  //               <span className='m-menu__link-text'>Nested Item 1</span>
+  //             </Link>
+  //           </li>
+  //           <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
+  //             <Link to='/' className='m-menu__link m-menu__toggle'>
+  //               <i className='m-menu__link-icon flaticon-user-ok' title='Subscribers' />
+  //               <span className='m-menu__link-text'>Nested Item 2</span>
+  //             </Link>
+  //           </li>
+  //           <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
+  //             <Link to='/' className='m-menu__link m-menu__toggle'>
+  //               <i className='m-menu__link-icon flaticon-user-ok' title='Subscribers' />
+  //               <span className='m-menu__link-text'>Nested Item 3</span>
+  //             </Link>
+  //           </li>
+  //         </ul>
+  //       </div>
+  //     </li>
+  //   )
+  // }
 
-  showAccountInformation () {
-    return (
-      <li className='m-menu__item' aria-haspopup='true' >
-        <Link to='/accountInformation' className='m-menu__link'>
-          <i className='m-menu__link-icon fa fa-id-card-o'>
-            <span />
-          </i>
-          <span className='m-menu__link-text'>
-            Account Information
-          </span>
-        </Link>
-      </li>
-    )
-  }
+  // showAccountInformation () {
+  //   return (
+  //     <li className='m-menu__item' aria-haspopup='true' >
+  //       <Link to='/accountInformation' className='m-menu__link'>
+  //         <i className='m-menu__link-icon fa fa-id-card-o'>
+  //           <span />
+  //         </i>
+  //         <span className='m-menu__link-text'>
+  //           Account Information
+  //         </span>
+  //       </Link>
+  //     </li>
+  //   )
+  // }
 
   showSettings () {
     return (
       <li className='m-menu__item  m-menu__item--submenu' aria-haspopup='true' data-menu-submenu-toggle='hover'>
-        <Link to='/' className='m-menu__link m-menu__toggle'>
+        <Link to='/settings' className='m-menu__link m-menu__toggle'>
           <i className='m-menu__link-icon flaticon-cogwheel' title='Settings' />
           <span className='m-menu__link-text'>Settings</span>
         </Link>
@@ -125,10 +125,7 @@ class Sidebar extends Component {
             <div id='mCSB_2' className='mCustomScrollBox mCS-minimal-dark mCSB_vertical mCSB_outside' tabIndex='0' style={{maxHeight: 'none'}}>
               <div id='mCSB_2_container' className='mCSB_container' style={{position: 'relative', top: '0px', left: '0px'}} dir='ltr'>
                 <ul className='m-menu__nav  m-menu__nav--dropdown-submenu-arrow '>
-                  {this.showDashboard()}
                   {this.showManageUrls()}
-                  {this.showNestedMenu()}
-                  {this.showAccountInformation()}
                   {this.showSettings()}
                   {this.showUserGuide()}
                 </ul>

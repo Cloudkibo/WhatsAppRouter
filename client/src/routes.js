@@ -9,9 +9,11 @@ import auth from './utility/auth.service.js'
 import Login from "./components/login"
 import SignUp from "./components/register"
 import Home from './components/home'
-import AccountInformation from './components/accountInformation'
+// import AccountInformation from './components/accountInformation'
+import Settings from './components/settings/settings'
 
 function requireAuth (nextState, replace) {
+  console.log('requireAuth called')
   if (!auth.loggedIn()) {
     replace({
       pathname: '/login',
@@ -21,6 +23,7 @@ function requireAuth (nextState, replace) {
 }
 
 function redirectAuthUsers(nextState, replace) {
+  console.log('redirectAuthUsers called')
   if (auth.loggedIn()) {
     replace({
       pathname: '/home',
@@ -31,11 +34,41 @@ function redirectAuthUsers(nextState, replace) {
 
 const Routes = () => (
   <Switch>
-    <Route exact path='/' component={Home} onEnter={redirectAuthUsers} />
-    <Route path='/login' component={Login} onEnter={redirectAuthUsers} />
-    <Route path='/signup' component={SignUp} onEnter={redirectAuthUsers} />
-    <Route path='/home' component={Home} onEnter={requireAuth} />
-    <Route path='/accountInformation' component={AccountInformation} onEnter={requireAuth} />
+    <Route exact path="/" render={() => (
+      auth.loggedIn() ? (
+        <Home />
+      ) : (
+        <Redirect to="/login"/>
+      )
+    )}/>
+    <Route path="/login" render={() => (
+      !auth.loggedIn() ? (
+        <Login />
+      ) : (
+        <Redirect to="/home"/>
+      )
+    )}/>
+    <Route path="/signup" render={() => (
+      !auth.loggedIn() ? (
+        <SignUp />
+      ) : (
+        <Redirect to="/home"/>
+      )
+    )}/>
+    <Route path="/home" render={() => (
+      auth.loggedIn() ? (
+        <Home />
+      ) : (
+        <Redirect to="/login"/>
+      )
+    )}/>
+    <Route path="/settings" render={() => (
+      auth.loggedIn() ? (
+        <Settings />
+      ) : (
+        <Redirect to="/login"/>
+      )
+    )}/>
     <Route path='*' render={() => <Redirect to='/' />} />
   </Switch>
 )

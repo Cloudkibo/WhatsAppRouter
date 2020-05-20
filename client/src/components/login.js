@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import logo from '../assets/logo.png'
+import background from '../assets/bg-3.jpg'
 const axios = require('axios');
 
 export default class Login extends Component {
@@ -26,37 +28,56 @@ export default class Login extends Component {
     }
     render() {
       var btn = {
-        width: '70%',
         padding: '12px',
-        border: 'none',
-        borderRadius: '4px',
-        margin: '5px 0',
-        marginLeft:'50px',
-        opacity: '0.85',
-        display: 'inline-block',
+        margin: '70px 0px 0px 64px',
         fontSize: '17px',
-        lineHeight: '20px',
-        textDecoration: 'none',
-        backgroundColor: '#dd4b39',
-        color: 'white'
+        width: '300px'
       }
 
         return (
-            <div style={{minHeight: '1000px', backgroundColor: '#e6e6e6'}}>
-                <div className="auth-wrapper" >
-                    <div className="auth-inner" style={{marginTop: '150px'}}>
-                            <h3>Sign In</h3>
-                            {
-                              this.state.url &&
-                              <a style={{marginTop: '20px'}} href={this.state.url} style={btn} className="google btn"><i className="fa fa-google fa-fw">
-                                </i> Login with Google
-                              </a>
-                            }
-                            <p style={{marginLeft: '110px'}}>New Here? <a href='/signup'>Signup</a></p>
+          <div className="m--skin- m-header--fixed m-header--fixed-mobile m-aside-left--enabled m-aside-left--skin-dark m-aside-left--offcanvas m-footer--push m-aside--offcanvas-default" >
+            <div className="m-grid m-grid--hor m-grid--root m-page">
+              <div className="m-grid__item m-grid__item--fluid m-grid m-grid--hor m-login m-login--singin m-login--2 m-login-2--skin-2" id="m_login" style={{backgroundImage: `url(${background})`, minHeight: '637px'}}>
+                <div className="m-grid__item m-grid__item--fluid	m-login__wrapper">
+                  <div className="m-login__container">
+                  	<div className="m-login__logo">
+							        <a href="#">
+								        <img src={logo} />
+							         </a>
+						         </div>
+                     <div className="m-login__signin">
+							         <div className="m-login__head">
+								         <h3 className="m-login__title">
+									         Sign In
+								         </h3>
+							          </div>
 
-                    </div>
-                </div>
+               {
+                 this.state.url &&
+                 <a href={this.state.url} style={btn} className="btn btn-danger m-btn m-btn--icon m-login__head m-login__title">
+                    <span>
+                      <i className="fa fa-google fa-fw" />
+                      <span>
+                        Login with Google
+                      </span>
+                    </span>
+                  </a>
+              }
+						</div>
+            <div className="m-login__account">
+              <span className="m-login__account-msg">
+                Don't have an account yet ?
+              </span>
+              &nbsp;&nbsp;
+              <a href="/signup" id="m_login_signup" className="m-link m-link--light m-login__account-link">
+                Sign Up
+              </a>
             </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         );
     }
 }
