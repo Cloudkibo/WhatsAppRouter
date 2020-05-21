@@ -78,7 +78,9 @@ class Childtable extends Component {
 
   render () {
     return (
-      <div className='form-row' style={{marginTop: '20px'}}>
+      <span>
+      {this.props.baseUrls.length > 0
+      ? <div className='form-row' style={{marginTop: '20px'}}>
       <input className="form-control m-input m-input--solid" onChange={this.props.search} type="text" placeholder="Search Group..." aria-label="Search" />
       <div
   className="m_datatable m-datatable m-datatable--default m-datatable--brand m-datatable--subtable m-datatable--loaded"
@@ -293,6 +295,9 @@ class Childtable extends Component {
 
 </div>
 </div>
+: <span>No Data to Display </span>
+}
+</span>
 
       )
   }
