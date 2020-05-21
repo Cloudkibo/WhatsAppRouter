@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import jwt_decode from 'jwt-decode'
+import Childtable from './childtable'
 const axios = require('axios');
 const BitlyClient = require('bitly').BitlyClient;
 const bitly = new BitlyClient('4e26e6edc4f5f7145e9bf33d728083c0decdf12b');
@@ -401,7 +402,7 @@ export default class Home extends Component {
               } else {
                 if (this.state.tobeEditIndex.alternetUrlChange.length > 0 && this.state.toBeEdit.alternetUrl.length > 0 ) {
                   this.state.tobeEditIndex.alternetUrlChange.forEach(index => {
-                    if(this.state.toBeEdit.alternetUrl[index].url) {
+                    if(this.state.toBeEdit.alternetUrl[index] && this.state.toBeEdit.alternetUrl[index].url) {
                       if(this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) !== this.getGroupID(this.state.toBeEdit.alternetUrl[index].url.replace(/\s/g, ''))) {
                         if((this.getGroupID(this.state.addUrls.alternetUrl[index].url.replace(/\s/g, '')) ===  this.getGroupID(element.url))) {
                           data.temp = true
@@ -660,7 +661,7 @@ export default class Home extends Component {
             <div className="m-content">
               <div className="m-alert m-alert--icon m-alert--air m-alert--square alert alert-dismissible m--margin-bottom-30" role="alert">
                 <div className="m-alert__icon">
-                  <i class="flaticon-technology m--font-accent"></i>
+                  <i className="flaticon-technology m--font-accent"></i>
                 </div>
                 <div className="m-alert__text">Need help in understanding WLB? Here is the <a href="https://kibopush.com/wlb/" target="_blank" rel="noopener noreferrer">documentation</a>.
                 </div>
@@ -708,102 +709,7 @@ export default class Home extends Component {
                           URL Created Successfully!
                   </div>
                   }
-                  <div className='form-row'>
-                    <input className="form-control m-input m-input--solid" onChange={this.search} type="text" placeholder="Search Group..." aria-label="Search" />
-                    <div className='col-md-12 m_datatable m-datatable m-datatable--default m-datatable--loaded' id='ajax_data' style={{marginTop: '30px'}}>
-                    {this.state.baseUrls.length > 0
-                    ? <table className='m-datatable__table' style={{display: 'block', height: 'auto', overflowX: 'auto'}}>
-                      <thead className='m-datatable__head'>
-                        <tr className='m-datatable__row'
-                          style={{height: '53px'}}>
-                          <th data-field='groupName'
-                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
-                            <span style={{width: '150px'}}>Group Name</span>
-                          </th>
-                          <th data-field='baseUrl'
-                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
-                            <span style={{width: '150px'}}>Base URL</span>
-                          </th>
-                          <th data-field='alternetGroups'
-                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
-                            <span style={{width: '150px'}}>Alternate Groups</span>
-                          </th>
-                          <th data-field='redirectLink'
-                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
-                            <span style={{width: '150px'}}>Redirect Link</span>
-                          </th>
-                          <th data-field='actions'
-                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
-                            <span style={{width: '150px'}}>Actions</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className='m-datatable__body'>
-                              {
-                                  this.state.baseUrls.map((url, i) =>
-                                      (
-                                          <tr data-row={i} key={i} className='m-datatable__row m-datatable__row--even' style={{height: '55px'}}>
-                                              <td data-field='groupName' className='m-datatable__cell--center m-datatable__cell'>
-                                                <span style={{width: '150px'}}>{url.name}</span>
-                                              </td>
-                                              <td data-field='baseUrl' className='m-datatable__cell--center m-datatable__cell'>
-                                                <span style={{width: '150px'}}>{url.url}</span>
-                                              </td>
-                                              <td data-field='alternetGroups' className='m-datatable__cell--center m-datatable__cell'>
-                                                <span style={{width: '150px'}}>{url.alternetGroups}</span>
-                                              </td>
-                                              <td data-field='redirectLink' className='m-datatable__cell--center m-datatable__cell'>
-                                                <span style={{width: '150px'}}>{url.redirectUrl}</span>
-                                              </td>
-                                              <td data-field='actions' className='m-datatable__cell--center m-datatable__cell'>
-                                                <span style={{width: '150px'}}>
-                                                {this.state.showRedirectUrl
-                                                    &&
-                                                    <a href='#/'
-                                                        data-placement="bottom"
-                                                        title="Copy Redirect URL"
-                                                        className= 'm-portlet__nav-link btn m-btn m-btn--hover-primary m-btn--pill'
-                                                        onClick={() => this.copyUrl(url)}>
-                                                            <span className="material-icons" style={{fontSize: '1.3rem'}}>
-                                                                file_copy
-                                                        </span>
-                                                    </a>
-                                                }
-                                                <a href='/#'
-                                                    data-toggle="modal"
-                                                    data-target="#edit"
-                                                    data-placement="bottom"
-                                                    className= 'm-portlet__nav-link btn m-btn m-btn--hover-primary m-btn--pill'
-                                                    title="Edit this URL"
-                                                    onClick={() => this.toBeEdit(url)}>
-                                                        <span className="material-icons" style={{fontSize: '1.3rem'}}>
-                                                            edit
-                                                    </span>
-                                                </a>
-                                                <a href='/#'
-                                                    className= 'm-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--pill'
-                                                    onClick={() => this.toBeDelete(url)}
-                                                    data-toggle="modal"
-                                                    data-target="#delete"
-                                                    data-placement="bottom"
-                                                    title="Delete this url" >
-                                                        <span className="material-icons" style={{fontSize: '1.3rem'}}>
-                                                            delete_outline
-                                                </span>
-                                                </a>
-                                                </span>
-                                              </td>
-                                          </tr>
-                                      )
-                                  )
-
-                              }
-                          </tbody>
-                    </table>
-                    : <span>No data to display</span>
-                  }
-                    </div>
-                    </div>
+                  <Childtable baseUrls={this.state.baseUrls} copyUrl ={this.copyUrl} toBeEdit={this.toBeEdit} toBeDelete={this.toBeDelete} search={this.search} showRedirectUrl={this.state.showRedirectUrl}/>
                   </div>
                 </div>
               </div>
@@ -819,8 +725,8 @@ export default class Home extends Component {
                                 </button>
                             </div>
                             <div className="modal-body">
-                              <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-max-height="350">
-                                <div className='row'>
+                              <div className="m-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-max-height="350">
+                                <div className='row' style={{overflowX: 'hidden'}}>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
                                             <div className="alert alert-danger" role="alert">
@@ -940,7 +846,7 @@ export default class Home extends Component {
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div className="modal-body" style={{ maxHeight: '444px', overflow: 'auto' }}>
+                            <div className="modal-body" style={{ maxHeight: '444px', overflow: 'auto', overflowX: 'hidden' }}>
                                 <div className='row'>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
