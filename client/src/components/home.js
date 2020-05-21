@@ -810,11 +810,9 @@ export default class Home extends Component {
                                                         </div>
                                                         <div className='col-sm-1' style={{marginLeft: '-10px'}}>
                                                         <a href='/#'
-                                                            className= 'm-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--pill'
+                                                        className="m-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--icon m-btn--icon-only m-btn--pill"
                                                               onClick={() => this.deleteAtlernetUrl(i)}>
-                                                                <span className="material-icons" style={{fontSize: '1.3rem'}}>
-                                                                delete_forever
-                                                        </span>
+                                                              <i className="la la-trash" />
                                                         </a>
                                                         </div>
                                                     </div>
@@ -931,13 +929,11 @@ export default class Home extends Component {
                                                         </div>
                                                         <div className='col-sm-1' style={{marginLeft: '-10px'}}>
                                                         <a href='/#'
-                                                            className= 'm-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--pill'
+                                                        className="m-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--icon m-btn--icon-only m-btn--pill"
                                                               data-toggle="modal"
                                                               data-target={this.state.addUrls.alternetUrl[i].url !== '' ? "#alternetDelete" : ""}
                                                               onClick={() => this.toBeAlternetDelete(i)}>
-                                                                <span className="material-icons" style={{fontSize: '1.3rem'}}>
-                                                                delete_forever
-                                                        </span>
+                                                              <i className="la la-trash" />
                                                         </a>
                                                         </div>
                                                     </div>
