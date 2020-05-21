@@ -1,10 +1,56 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import logo from '../../assets/logo.png'
+const auth = require('../../utility/auth.service.js')
+const axios = require('axios');
+
+
 
 class Header extends React.Component {
   constructor (props, context) {
     super(props, context)
-    this.state = {}
+    this.state = {
+      firstname: '',
+      lastname: '',
+      email: ''
+    }
+      this.getUser = this.getUser.bind(this);
+      this.logOut = this.logOut.bind(this);
+  }
+
+  getUser(userId) {
+      axios
+          .get(`/users/${userId}`, {
+            headers: {
+          "Authorization": `${auth.default.getToken()}`,
+          "userId": `${auth.default.getUserId()}`
+        }
+          })
+          .then(res => {
+              this.setState({
+                  firstname: res.data.payload[0].firstname,
+                  lastname: res.data.payload[0].lastname,
+                  email: res.data.payload[0].email
+              })
+          })
+          .catch(err => {
+            if(err.response.status === 401){
+              window.location.reload();
+            }
+              console.log(err)
+          })
+  }
+
+  logOut() {
+      auth.default.logout()
+      window.location.reload();
+  }
+
+  componentDidMount () {
+    if (auth.default.getUserId()) {
+          const userId = auth.default.getUserId()
+          this.getUser(userId)
+        }
   }
 
   render () {
@@ -16,8 +62,8 @@ class Header extends React.Component {
               <div className='m-stack m-stack--ver m-stack--general'>
                 <div className='m-stack__item m-stack__item--middle m-brand__logo'>
                   <h4 className='m-brand__logo-wrapper' style={{ color: 'white' }}>
-                    {/* <img alt='' src='assets/demo/default/media/img/logo/logo_default_dark.png'/> */}
-                    WHATSAPP ROUTER</h4>
+                    {<img alt='' style={{width: '35px'}} src={logo}/>}
+                    WLB</h4>
                 </div>
                 <div className='m-stack__item m-stack__item--middle m-brand__tools'>
                   <a href='#/' id='m_aside_left_minimize_toggle' className='m-brand__icon m-brand__toggler m-brand__toggler--left m--visible-desktop-inline-block'>
@@ -52,7 +98,7 @@ class Header extends React.Component {
                           </div>
                           <div style={{ display: 'inline-block', height: '41px' }}>
                             <span className='m-nav__link-text' style={{ lineHeight: '41px', verticalAlign: 'middle', textAlign: 'center' }}>
-                              WLB User<i className='fa fa-chevron-down' />
+                              {`${this.state.firstname} ${this.state.lastname}`} <i className='fa fa-chevron-down' />
                             </span>
                           </div>
                         </span>
@@ -67,10 +113,10 @@ class Header extends React.Component {
                               </div>
                               <div className='m-card-user__details'>
                                 <span className='m-card-user__name m--font-weight-500'>
-                                  WLB User
+                                  {`${this.state.firstname} ${this.state.lastname}`}
                                 </span>
                                 <span className='m-card-user__email'>
-                                  testuser@wlb.com
+                                  {`${this.state.email}`}
                                 </span>
                               </div>
                             </div>
@@ -79,39 +125,20 @@ class Header extends React.Component {
                             <div className='m-dropdown__content'>
                               <ul className='m-nav m-nav--skin-light'>
                                 <li className='m-nav__item'>
-                                  <Link to='#/' className='m-nav__link'>
-                                    <i className='m-nav__link-icon flaticon-list-2' />
-                                    <span className='m-nav__link-text'>Item 1</span>
-                                  </Link>
-                                </li>
-                                <li className='m-nav__item'>
-                                  <Link to='#/' className='m-nav__link'>
-                                    <i className='m-nav__link-icon flaticon-chat-1' />
-                                    <span className='m-nav__link-text'>Item 2</span>
-                                  </Link>
-                                </li>
-                                <li className='m-nav__item'>
-                                  <a href='#/' data-toggle="modal" data-target="#disconnectFacebook" className='m-nav__link'>
-                                    <i className='m-nav__link-icon la la-unlink' />
-                                    <span className='m-nav__link-text'>Item 3</span>
-                                  </a>
-                                </li>
-                                <li className='m-nav__separator m-nav__separator--fit' />
-                                <li className='m-nav__item'>
                                   <a href='http://kibopush.com/faq/' target='_blank' rel='noopener noreferrer' className='m-nav__link'>
                                     <i className='m-nav__link-icon flaticon-info' />
                                     <span className='m-nav__link-text'>FAQs</span>
                                   </a>
                                 </li>
                                 <li className='m-nav__item'>
-                                  <Link to='/'>
+                                  <Link to='/settings'>
                                     <i className='m-nav__link-icon flaticon-settings' />
                                     <span className='m-nav__link-text'>&nbsp;&nbsp;&nbsp;Settings</span>
                                   </Link>
                                 </li>
                                 <li className='m-nav__separator m-nav__separator--fit' />
                                 <li className='m-nav__item'>
-                                  <a href='#/' className='btn m-btn--pill btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder'>
+                                  <a href='#/' onClick={this.logOut} className='btn m-btn--pill btn-secondary m-btn m-btn--custom m-btn--label-brand m-btn--bolder'>
                                     Logout
                                   </a>
                                 </li>

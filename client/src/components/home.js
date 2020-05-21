@@ -39,7 +39,6 @@ export default class Home extends Component {
         }
         this.getUser = this.getUser.bind(this);
         this.getUrl = this.getUrl.bind(this);
-        this.logOut = this.logOut.bind(this);
         this.changeBaseUrl = this.changeBaseUrl.bind(this);
         this.changeBaseName = this.changeBaseName.bind(this)
         this.changeCount = this.changeCount.bind(this);
@@ -566,19 +565,13 @@ export default class Home extends Component {
     }
 
     componentDidMount() {
-        if (auth.default.getUserId()) {
-          const userId = auth.default.getUserId()
-          this.getUser(userId)
-          this.setState({ deleteAlert: false })
-          this.getUrl()
-        }
+      this.setState({ deleteAlert: false })
+      this.getUrl()
+      if (auth.default.getUserId()) {
+            const userId = auth.default.getUserId()
+            this.getUser(userId)
+          }
     }
-
-    logOut() {
-        auth.default.logout()
-        localStorage.removeItem('userToken')
-    }
-
     getUser(userId) {
         axios
             .get(`/users/${userId}`, {
@@ -601,7 +594,6 @@ export default class Home extends Component {
                 console.log(err)
             })
     }
-
 
     getUrl() {
         axios
@@ -657,171 +649,177 @@ export default class Home extends Component {
 
     render() {
         return (
-            <span>
-                <div className='row'>
-                    <div className='col-sm-12'>
-                        <div className="btn-group dropleft" style={{ float: 'right', margin: '10px 10px 0px 0px' }}>
-                            <button
-                                className="btn"
-                                type="button"
-                                id="dropdownMenuButton"
-                                data-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">
-                                <span className="material-icons">
-                                    person
-                                </span>
-                            </button>
-                            <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <p className="dropdown-item" >{this.state.firstname} {this.state.lastname}</p>
-                                <a className="dropdown-item" href="/accountInformation">User Profile</a>
-                                <div className="dropdown-divider"></div>
-                                <a className="dropdown-item" onClick={this.logOut} href="/#">Log Out</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
-                        {this.state.deleteAlert &&
-                            <div className="alert alert-success" style={{ width: '90%', margin: '30px 0px 0px 5%' }} role="alert">
-                                Deleted URL Successfully!
-                        </div>
-                        }
-                    </div>
-                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
-                        {this.state.copied &&
-                            <div className="alert alert-primary" style={{ width: '90%', margin: '30px 0px 0px 5%' }} role="alert">
-                                Redirect Link Copied!
-                        </div>
-                        }
-                    </div>
-                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
-                        {this.state.editAlert &&
-                            <div className="alert alert-success" style={{ width: '90%', margin: '30px 0px 0px 5%' }} role="alert">
-                                URL Edited Successfully!
-                        </div>
-                        }
-                    </div>
-                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
-                        {this.state.createAlert &&
-                            <div className="alert alert-success" style={{ width: '90%', margin: '30px 0px 0px 5%' }}  role="alert" >
-                                URL Created Successfully!
-                        </div>
-                        }
-                    </div>
-                    <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4%' }}>
-                      <div class="card" style={{ width: '90%', margin: '30px 0px 0px 5%' }}>
-                        <div class="card-header">
-                          Need help in understanding WLB? Here is the <a href='https://kibopush.com/wlb/' target='__blank'>documentation</a>.
-                        </div>
+          <div className="m-grid__item m-grid__item--fluid m-wrapper">
+            <div className="m-subheader ">
+              <div className="d-flex align-items-center">
+                <div className="mr-auto">
+                  <h3 className="m-subheader__title">Manage Urls</h3>
+                </div>
+              </div>
+            </div>
+            <div className="m-content">
+              <div className="m-alert m-alert--icon m-alert--air m-alert--square alert alert-dismissible m--margin-bottom-30" role="alert">
+                <div className="m-alert__icon">
+                  <i class="flaticon-technology m--font-accent"></i>
+                </div>
+                <div className="m-alert__text">Need help in understanding WLB? Here is the <a href="https://kibopush.com/wlb/" target="_blank" rel="noopener noreferrer">documentation</a>.
+                </div>
+              </div>
+            </div>
+            <div style={{padding: '15px 15px'}}>
+              <div className="col-xl-12">
+                <div className="m-portlet">
+                  <div className="m-portlet__head">
+                    <div className="m-portlet__head-caption">
+                      <div className="m-portlet__head-title">
+                        <h3 className="m-portlet__head-text">Urls</h3>
                       </div>
                     </div>
-                    <div className='col-sm-12'>
-                        <div className='row' style={{ width: '100%', margin: '0px 0px 0px 4%' }}>
-                            <div className='col-sm-10'>
-                                <input className="form-control" onChange={this.search} type="text" placeholder="Search" aria-label="Search" />
-                            </div>
-                            <div className='col-sm-2'>
-                                <button type="button"
-                                    data-toggle="modal"
-                                    data-target="#addUrl"
-                                    className="btn btn-primary"
-                                    onClick={this.toBeAdd}>
-                                    Add URL
-                                </button>
-                            </div>
-                        </div>
+                    <div className="m-portlet__head-tools">
+                      <button className="btn btn-primary m-btn m-btn--custom m-btn--icon m-btn--air m-btn--pill"
+                        data-toggle="modal"
+                        data-target="#addUrl"
+                        onClick={this.toBeAdd}>
+                        <span>
+                          <i className="la la-plus"></i>
+                          <span>Create New</span>
+                        </span>
+                      </button>
                     </div>
-                    <div className='col-sm-12'>
-                        <table className="table" style={{ width: '90%', margin: '30px 0px 0px 5%' }}>
-                            <thead>
-                                <tr className="table-active">
-                                    <th scope="col">Group Name</th>
-                                    <th scope="col">Base URL</th>
-                                    <th scope="col">Alternate Groups</th>
-                                    <th scope="col">Redirect Link</th>
-                                    <th scope="col">Actions</th>
-                                </tr>
-                            </thead>
-                            {this.state.baseUrls.length > 0
-                                ? <tbody>
-                                    {
-                                        this.state.baseUrls.map((url, i) =>
-                                            (
-                                                <tr key={i}>
-                                                    <td>{url.name}</td>
-                                                    <td>{url.url}</td>
-                                                    <td>{url.alternetGroups}</td>
-                                                    <td>{url.redirectUrl}</td>
-                                                    <td>
-                                                        {this.state.showRedirectUrl
-                                                            &&
-                                                            <a href='#/'
-                                                                data-placement="bottom"
-                                                                title="Copy Redirect URL"
-                                                                style={{ margin: '2px' }}
-                                                                onClick={() => this.copyUrl(url)}>
-                                                                <span className="badge badge-pill badge-info">
-                                                                    <span className="material-icons">
-                                                                        file_copy
-                                                                </span>
-                                                                </span>
-                                                            </a>
-                                                        }
-                                                        <a href='/#'
-                                                            data-toggle="modal"
-                                                            data-target="#edit"
-                                                            data-placement="bottom"
-                                                            title="Edit this URL"
-                                                            style={{ margin: '2px' }}
-                                                            onClick={() => this.toBeEdit(url)}>
-                                                            <span className="badge badge-pill badge-info">
-                                                                <span className="material-icons">
-                                                                    edit
+                  </div>
+                  <div className="m-portlet__body">
+                  {this.state.deleteAlert &&
+                      <div className="alert alert-success" style={{margin: '30px 0px 0px 0px' }} role="alert">
+                          Deleted URL Successfully!
+                      </div>
+                  }
+                  {this.state.copied &&
+                      <div className="alert alert-primary" style={{margin: '30px 0px 0px 0px' }} role="alert">
+                          Redirect Link Copied!
+                  </div>
+                  }
+                  {this.state.editAlert &&
+                      <div className="alert alert-success" style={{margin: '30px 0px 0px 0px' }} role="alert">
+                          URL Edited Successfully!
+                  </div>
+                  }
+                  {this.state.createAlert &&
+                      <div className="alert alert-success" style={{margin: '30px 0px 0px 0px' }}  role="alert" >
+                          URL Created Successfully!
+                  </div>
+                  }
+                  <div className='form-row'>
+                    <input className="form-control m-input m-input--solid" onChange={this.search} type="text" placeholder="Search Group..." aria-label="Search" />
+                    <div className='col-md-12 m_datatable m-datatable m-datatable--default m-datatable--loaded' id='ajax_data' style={{marginTop: '30px'}}>
+                    {this.state.baseUrls.length > 0
+                    ? <table className='m-datatable__table' style={{display: 'block', height: 'auto', overflowX: 'auto'}}>
+                      <thead className='m-datatable__head'>
+                        <tr className='m-datatable__row'
+                          style={{height: '53px'}}>
+                          <th data-field='groupName'
+                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
+                            <span style={{width: '150px'}}>Group Name</span>
+                          </th>
+                          <th data-field='baseUrl'
+                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
+                            <span style={{width: '150px'}}>Base URL</span>
+                          </th>
+                          <th data-field='alternetGroups'
+                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
+                            <span style={{width: '150px'}}>Alternate Groups</span>
+                          </th>
+                          <th data-field='redirectLink'
+                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
+                            <span style={{width: '150px'}}>Redirect Link</span>
+                          </th>
+                          <th data-field='actions'
+                            className='m-datatable__cell--center m-datatable__cell m-datatable__cell--sort'>
+                            <span style={{width: '150px'}}>Actions</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className='m-datatable__body'>
+                              {
+                                  this.state.baseUrls.map((url, i) =>
+                                      (
+                                          <tr data-row={i} key={i} className='m-datatable__row m-datatable__row--even' style={{height: '55px'}}>
+                                              <td data-field='groupName' className='m-datatable__cell--center m-datatable__cell'>
+                                                <span style={{width: '150px'}}>{url.name}</span>
+                                              </td>
+                                              <td data-field='baseUrl' className='m-datatable__cell--center m-datatable__cell'>
+                                                <span style={{width: '150px'}}>{url.url}</span>
+                                              </td>
+                                              <td data-field='alternetGroups' className='m-datatable__cell--center m-datatable__cell'>
+                                                <span style={{width: '150px'}}>{url.alternetGroups}</span>
+                                              </td>
+                                              <td data-field='redirectLink' className='m-datatable__cell--center m-datatable__cell'>
+                                                <span style={{width: '150px'}}>{url.redirectUrl}</span>
+                                              </td>
+                                              <td data-field='actions' className='m-datatable__cell--center m-datatable__cell'>
+                                                <span style={{width: '150px'}}>
+                                                {this.state.showRedirectUrl
+                                                    &&
+                                                    <a href='#/'
+                                                        data-placement="bottom"
+                                                        title="Copy Redirect URL"
+                                                        className= 'm-portlet__nav-link btn m-btn m-btn--hover-primary m-btn--pill'
+                                                        onClick={() => this.copyUrl(url)}>
+                                                            <span className="material-icons" style={{fontSize: '1.3rem'}}>
+                                                                file_copy
                                                         </span>
-                                                            </span>
-                                                        </a>
-                                                        <a href='/#'
-                                                            style={{ margin: '2px' }}
-                                                            onClick={() => this.toBeDelete(url)}
-                                                            data-toggle="modal"
-                                                            data-target="#delete"
-                                                            data-placement="bottom"
-                                                            title="Delete this url" >
-                                                            <span className="badge badge-pill badge-danger">
-                                                                <span className="material-icons">
-                                                                    delete_outline
-                                                        </span>
-                                                            </span>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        )
+                                                    </a>
+                                                }
+                                                <a href='/#'
+                                                    data-toggle="modal"
+                                                    data-target="#edit"
+                                                    data-placement="bottom"
+                                                    className= 'm-portlet__nav-link btn m-btn m-btn--hover-primary m-btn--pill'
+                                                    title="Edit this URL"
+                                                    onClick={() => this.toBeEdit(url)}>
+                                                        <span className="material-icons" style={{fontSize: '1.3rem'}}>
+                                                            edit
+                                                    </span>
+                                                </a>
+                                                <a href='/#'
+                                                    className= 'm-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--pill'
+                                                    onClick={() => this.toBeDelete(url)}
+                                                    data-toggle="modal"
+                                                    data-target="#delete"
+                                                    data-placement="bottom"
+                                                    title="Delete this url" >
+                                                        <span className="material-icons" style={{fontSize: '1.3rem'}}>
+                                                            delete_outline
+                                                </span>
+                                                </a>
+                                                </span>
+                                              </td>
+                                          </tr>
+                                      )
+                                  )
 
-                                    }
-                                </tbody>
-                                : <tbody>
-                                    <tr>
-                                        <td>No data to display</td>
-                                    </tr>
-                                </tbody>
-
-                            }
-
-                        </table>
+                              }
+                          </tbody>
+                    </table>
+                    : <span>No data to display</span>
+                  }
                     </div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+            </div>
                 {/* <!-- Modal --> */}
-                <div className="modal fade" tabIndex='-1' id="addUrl" role="dialog" aria-labelledby="addUrl" aria-hidden="true">
-                    <div className="modal-dialog" role="document">
+                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} className="modal fade" tabIndex='-1' id="addUrl" role="dialog" aria-labelledby="addUrl" aria-hidden="true">
+                    <div style={{ transform: 'translate(0, 0)' }} className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
-                            <div className="modal-header">
+                            <div style={{ display: 'block' }} className="modal-header">
                                 <h5 className="modal-title" id="exampleModalLabel">Add Whatsapp Invitation URL</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div className="modal-body" style={{ maxHeight: '444px', overflow: 'auto' }}>
+                            <div className="modal-body">
+                              <div class="m-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-max-height="350">
                                 <div className='row'>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
@@ -831,36 +829,36 @@ export default class Home extends Component {
                                         </div>
                                     }
                                     <div className='col-sm-12'>
-                                        <div className="form-group">
+                                        <div className="form-group m-form__group">
                                             <label>Base Group URL</label>
                                             <input
                                                 type="text"
                                                 name="baseUrl"
-                                                className="form-control"
+                                                className="form-control m-input"
                                                 value={this.state.addUrls.baseUrl}
                                                 onChange={this.changeBaseUrl}
                                                 placeholder="Enter Base Group URL" />
                                         </div>
                                     </div>
                                     <div className='col-sm-8'>
-                                        <div className="form-group">
+                                        <div className="form-group m-form__group">
                                             <label>Base Group Name</label>
                                             <input
                                                 type="text"
                                                 name="baseUrl"
-                                                className="form-control"
+                                                className="form-control m-input"
                                                 value={this.state.addUrls.name}
                                                 onChange={this.changeBaseName}
                                                 placeholder="Enter Base Group Name" />
                                         </div>
                                     </div>
                                     <div className='col-sm-4'>
-                                        <div className="form-group">
+                                        <div className="form-group m-form__group">
                                             <label>Participant Count</label>
                                             <input
                                                 type="number"
                                                 name="count"
-                                                className="form-control"
+                                                className="form-control m-input"
                                                 value={this.state.addUrls.count}
                                                 onChange={this.changeCount}
                                                 placeholder="Count" />
@@ -875,42 +873,43 @@ export default class Home extends Component {
                                                 <span className='col-sm-12' key={i}>
                                                     <div className='row'>
                                                         <div className='col-sm-12'>
-                                                            <div className="form-group">
+                                                            <div className="form-group m-form__group">
                                                                 <input
                                                                     type="text"
-                                                                    className="form-control"
+                                                                    className="form-control m-input"
                                                                     value={item.url}
                                                                     onChange={(e) => this.alternetUrlChange(i, e)}
                                                                     placeholder="Enter Alternate Group URL" />
                                                             </div>
                                                         </div>
                                                         <div className='col-sm-6'>
-                                                            <div className="form-group">
+                                                            <div className="form-group m-form__group">
                                                                 <input
                                                                     type="text"
-                                                                    className="form-control"
+                                                                    className="form-control m-input"
                                                                     value={item.name}
                                                                     onChange={(e) => this.alternetNameChange(i, e)}
                                                                     placeholder="Enter Group Name" />
                                                             </div>
                                                         </div>
-                                                        <div className='col-sm-4'>
-                                                            <div className="form-group">
+                                                        <div className='col-sm-5'>
+                                                            <div className="form-group m-form__group">
                                                                 <input
                                                                     type="number"
-                                                                    className="form-control"
+                                                                    className="form-control m-input"
                                                                     value={item.count}
                                                                     onChange={(e) => this.alternetCountChange(i, e)}
                                                                     placeholder="Count" />
                                                             </div>
                                                         </div>
-                                                        <div className='col-sm-2'>
-                                                            <button type="button" className="btn btn-danger" style={{ height: '37px' }}
-                                                                onClick={() => this.deleteAtlernetUrl(i)}>
-                                                                <span className="material-icons">
-                                                                    delete_forever
-                                                                </span>
-                                                            </button>
+                                                        <div className='col-sm-1' style={{marginLeft: '-10px'}}>
+                                                        <a href='/#'
+                                                            className= 'm-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--pill'
+                                                              onClick={() => this.deleteAtlernetUrl(i)}>
+                                                                <span className="material-icons" style={{fontSize: '1.3rem'}}>
+                                                                delete_forever
+                                                        </span>
+                                                        </a>
                                                         </div>
                                                     </div>
                                                     <hr />
@@ -928,47 +927,14 @@ export default class Home extends Component {
                                 <button type="button" className="btn btn-primary" onClick={() => this.disable('addurl')}>Add URL</button>
                             </div>
                         </div>
-                    </div>
-                </div>
-                {/* delete modal */}
-                <div className="modal fade" id="delete" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div className="modal-dialog modal-dialog-centered" role="document">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLongTitle">Delete Confirmation</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            {this.state.wrongEmail &&
-                                <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
-                                    <div className="alert alert-danger" role="alert">
-                                        Email did not matched.
-                                    </div>
-                                </div>
-                            }
-                            <div className="modal-body">
-                                Are you sure you want to delete this group?
-                            </div>
-
-                            <input style={{ margin: 'auto', width: '90%' }}
-                                type="text"
-                                className="form-control"
-                                value={this.state.confirmEmail}
-                                onChange={this.confirmEmail}
-                                placeholder="Confirm By typing your email" />
-                            <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="button" className="btn btn-primary" onClick={this.deleteUrl}>Delete</button>
-                            </div>
                         </div>
                     </div>
                 </div>
                 {/* <!-- edit Modal --> */}
-                <div className="modal fade" tabIndex='-1' id="edit" role="dialog" aria-labelledby="addUrl" aria-hidden="true">
-                    <div className="modal-dialog" role="document">
+                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} className="modal fade" tabIndex='-1' id="edit" role="dialog" aria-labelledby="addUrl" aria-hidden="true">
+                    <div style={{ transform: 'translate(0, 0)' }} className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
-                            <div className="modal-header">
+                            <div style={{ display: 'block' }} className="modal-header">
                                 <h5 className="modal-title" id="exampleModalLabel">Edit Whatsapp Invitation URL</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -984,36 +950,36 @@ export default class Home extends Component {
                                         </div>
                                     }
                                     <div className='col-sm-12'>
-                                        <div className="form-group">
+                                        <div className="form-group m-form__group">
                                             <label>Base Group URL</label>
                                             <input
                                                 type="text"
                                                 name="baseUrl"
-                                                className="form-control"
+                                                className="form-control m-input"
                                                 value={this.state.addUrls.baseUrl}
                                                 onChange={this.changeBaseUrl}
                                                 placeholder="Enter Base Group URL" />
                                         </div>
                                     </div>
                                     <div className='col-sm-8'>
-                                        <div className="form-group">
+                                        <div className="form-group m-form__group">
                                             <label>Base Group Name</label>
                                             <input
                                                 type="text"
                                                 name="baseUrl"
-                                                className="form-control"
+                                                className="form-control m-input"
                                                 value={this.state.addUrls.name}
                                                 onChange={this.changeBaseName}
                                                 placeholder="Enter Base Group Name" />
                                         </div>
                                     </div>
                                     <div className='col-sm-4'>
-                                        <div className="form-group">
+                                        <div className="form-group m-form__group">
                                             <label>Participant Count</label>
                                             <input
                                                 type="number"
                                                 name="count"
-                                                className="form-control"
+                                                className="form-control m-input"
                                                 value={this.state.addUrls.count}
                                                 onChange={this.changeCount}
                                                 placeholder="Count" />
@@ -1028,44 +994,45 @@ export default class Home extends Component {
                                                 <span className='col-sm-12' key={i}>
                                                     <div className='row'>
                                                         <div className='col-sm-12'>
-                                                            <div className="form-group">
+                                                            <div className="form-group m-form__group">
                                                                 <input
                                                                     type="text"
-                                                                    className="form-control"
+                                                                    className="form-control m-input"
                                                                     value={item.url}
                                                                     onChange={(e) => this.alternetUrlChange(i, e)}
                                                                     placeholder="Enter Alternate Group URL" />
                                                             </div>
                                                         </div>
                                                         <div className='col-sm-6'>
-                                                            <div className="form-group">
+                                                            <div className="form-group m-form__group">
                                                                 <input
                                                                     type="text"
-                                                                    className="form-control"
+                                                                    className="form-control m-input"
                                                                     value={item.name}
                                                                     onChange={(e) => this.alternetNameChange(i, e)}
                                                                     placeholder="Enter Alternate Group Name" />
                                                             </div>
                                                         </div>
-                                                        <div className='col-sm-4'>
-                                                            <div className="form-group">
+                                                        <div className='col-sm-5'>
+                                                            <div className="form-group m-form__group">
                                                                 <input
                                                                     type="number"
-                                                                    className="form-control"
+                                                                    className="form-control m-input"
                                                                     value={item.count}
                                                                     onChange={(e) => this.alternetCountChange(i, e)}
                                                                     placeholder="Count" />
                                                             </div>
                                                         </div>
-                                                        <div className='col-sm-2'>
-                                                            <button type="button" className="btn btn-danger" style={{ height: '37px' }}
-                                                                data-toggle="modal"
-                                                                data-target={this.state.addUrls.alternetUrl[i].url !== '' ? "#alternetDelete" : ""}
-                                                                onClick={() => this.toBeAlternetDelete(i)}>
-                                                                <span className="material-icons">
-                                                                    delete_forever
-                                                                </span>
-                                                            </button>
+                                                        <div className='col-sm-1' style={{marginLeft: '-10px'}}>
+                                                        <a href='/#'
+                                                            className= 'm-portlet__nav-link btn m-btn m-btn--hover-danger m-btn--pill'
+                                                              data-toggle="modal"
+                                                              data-target={this.state.addUrls.alternetUrl[i].url !== '' ? "#alternetDelete" : ""}
+                                                              onClick={() => this.toBeAlternetDelete(i)}>
+                                                                <span className="material-icons" style={{fontSize: '1.3rem'}}>
+                                                                delete_forever
+                                                        </span>
+                                                        </a>
                                                         </div>
                                                     </div>
                                                     <hr />
@@ -1085,11 +1052,11 @@ export default class Home extends Component {
                         </div>
                     </div>
                 </div>
-                {/* delete alternet modal */}
-                <div className="modal fade bd-example-modal-sm" id="alternetDelete" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                    <div className="modal-dialog modal-sm" role="document">
+                {/* delete modal */}
+                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} className="modal fade" id="delete" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div style={{ transform: 'translate(0, 0)' }} className="modal-dialog modal-dialog-centered" role="document">
                         <div className="modal-content">
-                            <div className="modal-header">
+                            <div style={{ display: 'block' }} className="modal-header">
                                 <h5 className="modal-title" id="exampleModalLongTitle">Delete Confirmation</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
@@ -1108,7 +1075,41 @@ export default class Home extends Component {
 
                             <input style={{ margin: 'auto', width: '90%' }}
                                 type="text"
-                                className="form-control"
+                                className="form-control m-input"
+                                value={this.state.confirmEmail}
+                                onChange={this.confirmEmail}
+                                placeholder="Confirm By typing your email" />
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" className="btn btn-primary" onClick={this.deleteUrl}>Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* delete alternet modal */}
+                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} className="modal fade bd-example-modal-sm" id="alternetDelete" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div style={{ transform: 'translate(0, 0)' }} className="modal-dialog modal-sm" role="document">
+                        <div className="modal-content">
+                            <div style={{ display: 'block' }} className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLongTitle">Delete Confirmation</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            {this.state.wrongEmail &&
+                                <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
+                                    <div className="alert alert-danger" role="alert">
+                                        Email did not matched.
+                                    </div>
+                                </div>
+                            }
+                            <div className="modal-body">
+                                Are you sure you want to delete this group?
+                            </div>
+
+                            <input style={{ margin: 'auto', width: '90%' }}
+                                type="text"
+                                className="form-control m-input"
                                 value={this.state.confirmEmail}
                                 onChange={this.confirmEmail}
                                 placeholder="Confirm By typing your email" />
@@ -1120,7 +1121,7 @@ export default class Home extends Component {
                         </div>
                     </div>
                 </div>
-            </span>
+          </div>
         );
     }
 
