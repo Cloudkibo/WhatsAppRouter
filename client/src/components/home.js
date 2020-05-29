@@ -36,8 +36,10 @@ export default class Home extends Component {
             tobeEditIndex: {
               baseGroupUrlChanged: false,
               alternetUrlChange: []
-            }
+            },
+            type: 'add'
         }
+
         this.getUser = this.getUser.bind(this);
         this.getUrl = this.getUrl.bind(this);
         this.changeBaseUrl = this.changeBaseUrl.bind(this);
@@ -65,6 +67,55 @@ export default class Home extends Component {
         this.validateName = this.validateName.bind(this)
         this.validateUrl = this.validateUrl.bind(this)
         this.validateAlternateGroups = this.validateAlternateGroups.bind(this)
+        this.closeModal = this.closeModal.bind(this)
+        this.closeUnsaved = this.closeUnsaved.bind(this)
+    }
+
+    closeModal (type) {
+      this.setState({type: type})
+      let temp = false
+      if(type === 'edit') {
+        this.state.toBeEdit.alternetUrl.forEach((element, i) => {
+          if(
+            element.url !== this.state.addUrls.alternetUrl[i].url ||
+            element.name !== this.state.addUrls.alternetUrl[i].name ||
+            element.count !== this.state.addUrls.alternetUrl[i].count
+          ) {
+            temp = true
+          }
+        });
+      }
+      if(type === 'add' && (
+        this.state.addUrls.name !== '' ||
+         this.state.addUrls.baseUrl !== '' ||
+         this.state.addUrls.count !== 0 ||
+         this.state.addUrls.alternetUrl.length !== 0)
+       ) {
+           this.refs.unsaved.click()
+         } else if (type === 'edit') {
+           console.log(this.state.toBeEdit)
+           console.log(this.state.addUrls)
+           if(this.state.addUrls.name === this.state.toBeEdit.name &&
+            this.state.addUrls.baseUrl === this.state.toBeEdit.baseUrl &&
+            this.state.addUrls.count === this.state.toBeEdit.count &&
+            this.state.addUrls.alternetUrl.length === this.state.toBeEdit.alternetUrl.length) {
+              if(temp) this.refs.unsaved.click()
+              else this.refs.edit.click()
+            } else {
+              this.refs.unsaved.click()
+            }
+         }
+         else {
+           if(type === 'add') this.refs.addUrl.click()
+           else this.refs.edit.click()
+         }
+    }
+
+    closeUnsaved () {
+      this.refs.unsaved.click()
+      if(this.state.type === 'add') this.refs.addUrl.click()
+      else this.refs.edit.click()
+
     }
 
     search(event) {
@@ -121,7 +172,7 @@ export default class Home extends Component {
                     this.setState({ editAlert: false })
                   }, 3000);
                 })
-                document.getElementById('edit').click()
+                this.refs.edit.click()
                 setTimeout(() => { this.getUrl() }, 500)
             })
             .catch(err => {
@@ -293,7 +344,10 @@ export default class Home extends Component {
         let temp = this.state.addUrls
         let data = { name: '', url: '', count: 0 }
         temp.alternetUrl.push(data)
-        this.setState({ addUrls: temp })
+        this.setState({ addUrls: temp }, ()=> {
+          document.getElementById("modalBody").scrollTop = 2000
+          document.getElementById("editModalBody").scrollTop = 2000
+        })
     }
 
     addUrl() {
@@ -317,7 +371,7 @@ export default class Home extends Component {
                     this.setState({ createAlert: false })
                   }, 3000);
                 })
-                document.getElementById('addUrl').click()
+                this.refs.addUrl.click()
                 this.getUrl()
             })
             .catch(err => {
@@ -715,17 +769,17 @@ export default class Home extends Component {
               </div>
             </div>
                 {/* <!-- Modal --> */}
-                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} className="modal fade" tabIndex='-1' id="addUrl" role="dialog" aria-labelledby="addUrl" aria-hidden="true">
+                <a href='#/' style={{ display: 'none' }} ref='addUrl' data-toggle='modal' data-backdrop='static' data-keyboard='false' data-target="#addUrl">addUrl</a>
+                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} data-backdrop="static" data-keyboard="false" className="modal fade" tabIndex='-1' id="addUrl" role="dialog" aria-labelledby="addUrl" aria-hidden="true">
                     <div style={{ transform: 'translate(0, 0)' }} className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
                             <div style={{ display: 'block' }} className="modal-header">
                                 <h5 className="modal-title" id="exampleModalLabel">Add Whatsapp Invitation URL</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <button type="button" className="close" onClick={() => {this.closeModal('add')}} aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div className="modal-body">
-                              <div className="m-scrollable" data-scrollbar-shown="true" data-scrollable="true" data-max-height="350">
+                            <div className="modal-body" id='modalBody' style={{ maxHeight: '444px', overflow: 'auto', overflowX: 'hidden' }}>
                                 <div className='row' style={{overflowX: 'hidden'}}>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
@@ -827,24 +881,24 @@ export default class Home extends Component {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Ignore</button>
+                                <button type="button" className="btn btn-secondary" onClick={() => {this.closeModal('add')}}>Ignore</button>
                                 <button type="button" className="btn btn-primary" onClick={() => this.disable('addurl')}>Add URL</button>
                             </div>
-                        </div>
                         </div>
                     </div>
                 </div>
                 {/* <!-- edit Modal --> */}
-                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} className="modal fade" tabIndex='-1' id="edit" role="dialog" aria-labelledby="addUrl" aria-hidden="true">
+                <a href='#/' style={{ display: 'none' }} ref='edit' data-toggle='modal' data-backdrop='static' data-keyboard='false' data-target="#edit">edit</a>
+                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} data-backdrop="static" data-keyboard="false" className="modal fade" tabIndex='-1' id="edit" role="dialog" aria-labelledby="addUrl" aria-hidden="true">
                     <div style={{ transform: 'translate(0, 0)' }} className="modal-dialog modal-lg" role="document">
                         <div className="modal-content">
                             <div style={{ display: 'block' }} className="modal-header">
                                 <h5 className="modal-title" id="exampleModalLabel">Edit Whatsapp Invitation URL</h5>
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                <button type="button" className="close" onClick={() => {this.closeModal('edit')}}>
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             </div>
-                            <div className="modal-body" style={{ maxHeight: '444px', overflow: 'auto', overflowX: 'hidden' }}>
+                            <div className="modal-body" id='editModalBody' style={{ maxHeight: '444px', overflow: 'auto', overflowX: 'hidden' }}>
                                 <div className='row'>
                                     {this.state.msg.show &&
                                         <div className='col-sm-12' style={{ marginRight: '5%', marginBottom: '4px' }}>
@@ -948,8 +1002,29 @@ export default class Home extends Component {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-dismiss="modal">Ignore</button>
+                                <button type="button" className="btn btn-secondary" onClick={() => {this.closeModal('edit')}}>Ignore</button>
                                 <button type="button" className="btn btn-primary" onClick={() => this.disable('editurl')}>Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* Unsaved Changes*/}
+                <a href='#/' style={{ display: 'none' }} ref='unsaved' data-toggle='modal' data-backdrop='static' data-keyboard='false' data-target="#unsaved">unsaved</a>
+                <div style={{ background: 'rgba(33, 37, 41, 0.6)' }} className="modal fade" id="unsaved" tabIndex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                    <div style={{ transform: 'translate(0, 0)' }} className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div style={{ display: 'block' }} className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLongTitle">Warning</h5>
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                Are you sure you want to close this modal and lose all the data that was entered?
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal">No</button>
+                                <button type="button" className="btn btn-primary" onClick={this.closeUnsaved}>Yes</button>
                             </div>
                         </div>
                     </div>

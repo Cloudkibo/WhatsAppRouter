@@ -1,6 +1,8 @@
 const {google} = require('googleapis');
 var config = require('../../config');
 var authService = require('../auth.service.js')
+const utility = require('../../utility.js')
+const logicLayer = require('./logiclayer.js')
 
 const googleConfig = {
   clientId: process.env.GOOGLE_CLIENT_ID,
@@ -105,6 +107,23 @@ async function getGoogleAccountFromCode(code, req, res) {
                     return config.errorResponse(res, 500, 'Failed to create database connection.', err)
                   } else {
                     authService.setTokenCookie(tokens.id_token, result.insertId, req, res)
+                    let sendgrid = utility.getSendGridObject()
+                    let emailHeader = logicLayer.emailHeader(newUser)
+                    let emailBody = logicLayer.setEmailBody('abcd', newUser)
+                    let email = {
+                      to: emailHeader.to,
+                      from: emailHeader.from,
+                      subject: emailHeader.subject,
+                      text: emailHeader.text,
+                      html: emailBody
+                    }
+                    sendgrid.send(email, function (err) {
+                      if (err) {
+                        console.log(err);
+                      } else {
+                        console.log("Success.");
+                      }
+                    });
                     res.redirect('/')
                   }
                 })
