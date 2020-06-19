@@ -124,10 +124,12 @@ async function getGoogleAccountFromCode(code, req, res) {
                         console.log("Success.");
                       }
                     });
+                    connection.release()
                     res.redirect('/')
                   }
                 })
               } else {
+                connection.release()
                 authService.setTokenCookie(tokens.id_token, user[0].userId, req, res)
                 res.redirect('/')
               }
