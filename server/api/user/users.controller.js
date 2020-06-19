@@ -13,6 +13,7 @@ exports.get = (req, res, next) => {
                     connection.release()
                     return config.errorResponse(res, 500, 'Failed to query database.', error)
                 } else {
+                    connection.release()
                     return config.successresponse(res, 200, 'fetched all users successfully!', user)
                 }
             })
@@ -21,6 +22,7 @@ exports.get = (req, res, next) => {
 }
 
 exports.getById = (req, res, next) => {
+    console.log('Users function called')
     config.pool.getConnection((err, connection) => {
         if (err) {
             connection.release()
@@ -32,7 +34,7 @@ exports.getById = (req, res, next) => {
                     connection.release()
                     return config.errorResponse(res, 500, 'Failed to query database.', error)
                 } else {
-
+                    connection.release()
                     return config.successresponse(res, 200, 'user fetched successfully!', user)
                 }
             })
@@ -64,6 +66,7 @@ exports.put = (req, res, next) => {
                             connection.release()
                             return config.errorResponse(res, 500, 'Failed to query database.', error)
                         } else {
+                            connection.release()
                             return config.successresponse(res, 200, 'user successfully updated!', user)
                         }
                     })
