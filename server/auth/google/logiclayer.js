@@ -1,7 +1,7 @@
 const emailHeader = (body) => {
   return {
     to: ''+body.email,
-    from: 'support@cloudkibo.com',
+    from: 'admin@cloudkibo.com',
     subject: 'Welcome to WLB',
     text: 'Welcome to WLB'
   }

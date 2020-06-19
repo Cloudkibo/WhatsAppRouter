@@ -3,7 +3,7 @@ var mysql = require('mysql');
 exports.all = {
   JWT_KEY: "cloudkibo",
   sendgrid: {
-    username: 'cloudkibo',
+    username: 'jawaid@cloudKibo.com',
     password: 'cl0udk1b0'
   }
 }
