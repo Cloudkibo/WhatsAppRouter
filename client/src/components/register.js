@@ -89,7 +89,7 @@ export default class SignUp extends Component {
     </div>
     <div
       className="m-grid__item m-grid__item--fluid m-grid m-grid--center m-grid--hor m-grid__item--order-tablet-and-mobile-1	m-login__content"
-    style={{backgroundImage: `url(${background})`, minHeight: '637px'}}
+    style={{backgroundImage: `url(${background})`, minHeight: '100vh'}}
     >
       <div className="m-grid__item m-grid__item--middle">
         <h3 className="m-login__welcome">Join WLB</h3>
