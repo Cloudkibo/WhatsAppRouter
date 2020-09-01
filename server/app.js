@@ -53,11 +53,11 @@ app.use((req, res, next) => {
   }
   next()
 })
-// if (process.env.NODE_ENV === 'production') {
-//   httpApp.get('*', (req, res) => {
-//     res.redirect(`${process.env.DOMAIN}${req.url}`)
-//   })
-// }
+if (process.env.NODE_ENV === 'production') {
+  httpApp.get('*', (req, res) => {
+    res.redirect(`${process.env.DOMAIN}${req.url}`)
+  })
+}
 app.use('/urls', require('./api/urls'))
 app.use('/users', require('./api/user'));
 app.use('/auth', require('./auth/index'))
